@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 """
 
 # Caminho das séries históricas
-path = "C:\\Users\\jonat\\OneDrive\\Área de Trabalho\\PROJETO_VPP_II\\BASE_DE_DADOS\\Historico_do_Preco_Horario(SE)_-_17_de_abril_de_2018_a_5_de_abril_de_2022.xlsx"
+path = 'C:\\Users\\jonat\\OneDrive\\Área de Trabalho\\PROJETO_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\Historico_do_Preco_Horario(SE)_-_17_de_abril_de_2018_a_5_de_abril_de_2022.xlsx'
 
 # Importando a tabela PLD e convertendo em séries históricas
 PLD_Table = pd.read_excel(path, header = None, index_col = False)
@@ -39,4 +39,3 @@ PLD_hourly_df.to_csv("C:\\Users\\jonat\\OneDrive\\Área de Trabalho\\PROJETO_VPP
     index = False,
     header = None
     )
-

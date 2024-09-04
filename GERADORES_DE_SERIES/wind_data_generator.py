@@ -27,7 +27,7 @@ while True:
     except ValueError:
         print('Insira um valor numérico válido')
 
-# Definindo a quantidade de cenários
+# Definindo a quantidade de séries por usinas
 while True:
     n = input('Insira a quantidade de séries ou tecle enter para 11: ')
     if n == '':
