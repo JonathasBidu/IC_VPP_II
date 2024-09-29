@@ -12,10 +12,12 @@ from pathlib import Path
 '''
 
 # Obtendo os caminhos das bases de dados
-path_1 = "C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_time_series_buzios.csv"
-path_2 = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_time_seires_niteroi.csv'
-path_3 = "C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_time_series_angra_dos_reis.csv"
-
+# path_1 = "C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_time_series_buzios.csv"
+path_1 = Path(__file__).parent / "BASE_DE_DADOS" / "solar_time_series_buzios.csv"
+# path_2 = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_time_seires_niteroi.csv'
+path_2 = Path(__file__).parent / "BASE_DE_DADOS" / "solar_time_seires_niteroi.csv"
+# path_3 = "C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_time_series_angra_dos_reis.csv"
+path_3 = Path(__file__).parent / "BASE_DE_DADOS" / "solar_time_series_angra_dos_reis.csv"
 # Obtendo os dados de irradiâcia e temperatura
 buzio_time_series = pd.read_csv(path_1, skiprows = 8, nrows = 8760, sep = ',', usecols = ['G(i)', 'T2m'])
 niteroi_time_series = pd.read_csv(path_2, skiprows = 8, nrows = 8760, sep = ',', usecols = ['G(i)', 'T2m'])
