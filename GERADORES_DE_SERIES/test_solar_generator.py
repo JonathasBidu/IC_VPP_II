@@ -1,83 +1,105 @@
+from pathlib import Path
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from PVGenPwr import PVGenPwr
 
-path = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\GERADORES_DE_SERIES\\BASE_DE_DADOS\\solar_hourly_series.xlsx'
+# Obtendo o caminho do arquivo das séries históricas de irradiância e temperatura
+path = Path(__file__).parent / 'BASE_DE_DADOS' / 'solar_hourly_series.xlsx'
 
+# Definindo o horizonte horário
+while True:
+    Npoints = input('Insira o intervalo em horas desejado ou tecle enter para 168 horas(1 semana): ')
+    if Npoints == '':
+        Npoints = 168
+        break
+    try:
+        Npoints = int(Npoints)
+        if Npoints > 0:
+            Npoints = Npoints
+            break
+        else:
+            print('Digite um valor numérico válido')
+    except ValueError:
+        print('Digite um valor numérico válido')
+
+# Definindo o número (n) de séries desejadas
+while True:
+    n = input('Digite a quantidade de séries desejada ou tecle enter para 11: ')
+    if n == '':
+        n = 11
+        break
+    try:
+        n = int(n)
+        if n > 0:
+            n = n
+            break
+        else:
+            print('Insira um valor numérico válido')
+    except ValueError:
+        print('insira um valor numérico válido') 
+
+# quantidade de módulos em paralelo
+Np = 400
+# quantidade de módulos em série
+Ns = 2000
+
+# Obtendo os sheets(abas da planilha)
 sheets = pd.ExcelFile(path)
 
-print(sheets. sheet_names)
+# Criando o writer para o arquivo de saída
+outpu_path = Path(__file__).parent / 'SERIES_GERADAS' / 'PVsystem_hourly_series.xlsx'
+with pd.ExcelWriter(outpu_path) as writer:
 
+    # Iterando sobre as abas da planilha
+    for sheet in sheets.sheet_names:
 
-# while True:
-#     Npoints = input('Insira o intervalo em horas desejado ou tecle enter para 168 horas(1 semana): ')
-#     if Npoints == '':
-#         Npoints = 168
-#         break
-#     try:
-#         Npoints = int(Npoints)
-#         if Npoints > 0:
-#             Npoints = Npoints
-#             break
-#         else:
-#             print('Digite um valor numérico válido')
-#     except ValueError:
-#         print('Digite um valor numérico válido')
+        # Obtendo a série da região i
+        solar_tsdata = pd.read_excel(path, sheet_name = sheet)
 
-# while True:
-#     n = input('Digite a quantidade de séries desejada ou tecle enter para 11: ')
-#     if n == '':
-#         n = 11
-#         break
-#     try:
-#         n = int(n)
-#         if n > 0:
-#             n = n
-#             break
-#         else:
-#             print('Insira um valor numérico válido')
-#     except ValueError:
-#         print('insira um valor numérico válido') 
+        # Criando uma matriz temporária de irradiância e temperatura
+        irradiance_hourly_series = np.zeros((n, Npoints))
+        temperature_hourly_series = np.zeros((n, Npoints))
 
-for i in sheets.sheet_names:
-    print(i)
-# irradiance_hourly_series = np.zeros((n, Npoints))
-# temperature_hourly_series = np.zeros((n, Npoints))
+        for i in range(n):
+            inicio = Npoints * i
+            fim = Npoints * (i+1)
+            irradiance_hourly_series[i, :] = solar_tsdata.iloc[inicio: fim, 0].values
+            temperature_hourly_series[i, :] = solar_tsdata.iloc[inicio: fim, 1].values
 
-# # quantidade de módulos em paralelo
-# Np = 400
-# # quantidade de módulos em série
-# Ns = 2000
+        PVpwr_irradiance_hourly_series = np.zeros_like(irradiance_hourly_series)
 
-# for i in range(n):
-#     inicio = Npoints * i
-#     fim = Npoints * (i+1)
-#     irradiance_hourly_series[i, :] = solar_tsdata.iloc[inicio: fim, 0].values
-#     temperature_hourly_series[i, :] = solar_tsdata.iloc[inicio: fim, 1].values
+        for s in range(n):
+            for time in range(Npoints):
+                T = temperature_hourly_series[s, time] + 273.15  # graus Kelvin
+                G = irradiance_hourly_series[s, time]
+                Pmmp, Vmmp, Immp = PVGenPwr(G, T, Np, Ns)
+                PVpwr_irradiance_hourly_series[s, time] = Pmmp
+                print(s, time)
+        print(fim)
 
-# PVpwr_irradiance_hourly_series = np.zeros_like(irradiance_hourly_series)
+        PVpwr_hourly_series_pd = pd.DataFrame(PVpwr_irradiance_hourly_series)
+        PVpwr_hourly_series_pd.to_excel(writer, sheet_name = sheet, index = False)
 
-# # Iterar sobre cenários e pontos no tempo
-# for s in range(n):
-#     for time in range(Npoints):
-#         T = temperature_hourly_series[s, time] + 20 + 273.15  # graus Kelvin
-#         T += 25.00  # Adicionando ajuste temporário
-#         G = irradiance_hourly_series[s, time]
-#         Pmmp, Vmmp, Immp = PVGenPwr(G, T, Np, Ns)
-#         PVpwr_irradiance_hourly_series[s, time] = Pmmp
-#         print(s, time)
-# print(fim)
+# Teste de uso
+if __name__ == '__main__':
 
-# # salvamento da série em um arquivo csv
-# PVpwr_hourly_series_pd = pd.DataFrame(PVpwr_irradiance_hourly_series)
-# PVpwr_hourly_series_pd.to_csv('C:\Users\Jonathas Aguiar\Desktop\IC_VPP_II\SERIES_GERADAS\PVsystem_hourly_series.csv', sep = ';', index = False, header = None)
+    import matplotlib.pyplot as plt
 
-# for i in range(n):
-#     plt.figure(figsize = (12, 5))
-#     plt.title(f'Série FV {i + 1}')
-#     plt.plot(PVpwr_hourly_series_pd.iloc[i,:], 'r')
-#     plt.xlabel('Hora')
-#     plt.ylabel('Carga')
-#     plt.show()
+    path = Path(__file__).parent.parent / 'SERIES_GERADAS' / 'PVsystem_hourly_series.xlsx'
+
+    sheets = pd.ExcelFile(path)
+
+    for sheet in sheets.sheet_names:
+
+        PVpwr_irradiance_hourly_series = pd.read_excel(path, sheet_name = sheet)
+    
+        idx = np.random.choice(PVpwr_irradiance_hourly_series.shape[0])
+
+        plt.title('PVsystem')
+        plt.plot(PVpwr_irradiance_hourly_series.iloc[idx, :24])
+        plt.legend(['Búzios', 'Niterói', 'Angra dos Reis'])
+        plt.xlabel('Hora')
+        plt.ylabel('Carga')
+
+    plt.show()
 
