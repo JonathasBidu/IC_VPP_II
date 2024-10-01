@@ -51,10 +51,10 @@ plt.legend(['Búzios', 'Niterói', 'Angra'])
 plt.show()
 
 # Direcionando o caminho onde o arquivo será salvo
-file = Path(__file__).parent / 'BASE_DE_DADOS' /'solar_hourly_series.xlsx'
+output_path = Path(__file__).parent / 'BASE_DE_DADOS' /'solar_hourly_series.xlsx'
 
 # Criando uma planilha do tipo xlsx
-with pd.ExcelWriter(file) as writer:
+with pd.ExcelWriter(output_path) as writer:
     buzio_time_series = pd.DataFrame(buzio_tsdata)
     niteroi_time_series = pd.DataFrame(niteroi_tsdata)
     angra_time_series = pd.DataFrame(angra_tsdata)
