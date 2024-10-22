@@ -24,9 +24,9 @@ niteroi_time_series = pd.read_csv(path_2, skiprows = 8, nrows = 8760, sep = ',',
 angra_time_series = pd.read_csv(path_3, skiprows = 8, nrows = 8760, sep = ',', usecols = ['G(i)', 'T2m'])
 
 # Transformando os DataFrame em matrizes numpy
-buzio_tsdata = buzio_time_series.to_numpy()
-niteroi_tsdata = niteroi_time_series.to_numpy()
-angra_tsdata = angra_time_series.to_numpy()
+buzio_tsdata = buzio_time_series.to_numpy()[3: ,]
+niteroi_tsdata = niteroi_time_series.to_numpy()[3: ,]
+angra_tsdata = angra_time_series.to_numpy()[3: ,]
 
 # gráfico da irradiânica nas primeiras 168 horas (1 semana)
 plt.figure(figsize = (10, 5))
@@ -51,10 +51,13 @@ plt.legend(['Búzios', 'Niterói', 'Angra'])
 plt.show()
 
 # Direcionando o caminho onde o arquivo será salvo
-file = Path(__file__).parent / 'BASE_DE_DADOS' /'solar_hourly_series.xlsx'
+output_path = Path(__file__).parent / 'BASE_DE_DADOS' /'solar_hourly_series.xlsx'
 
 # Criando uma planilha do tipo xlsx
-with pd.ExcelWriter(file) as writer:
-    buzio_time_series.to_excel(writer, sheet_name = 'Búzios', index = False)
-    niteroi_time_series.to_excel(writer, sheet_name = 'Niterói', index = False)
-    angra_time_series.to_excel(writer, sheet_name = 'Angra dos Reis', index = False)
+with pd.ExcelWriter(output_path) as writer:
+    buzio_time_series = pd.DataFrame(buzio_tsdata)
+    niteroi_time_series = pd.DataFrame(niteroi_tsdata)
+    angra_time_series = pd.DataFrame(angra_tsdata)
+    buzio_time_series.to_excel(writer, sheet_name = 'Búzios', index = False, header = None)
+    niteroi_time_series.to_excel(writer, sheet_name = 'Niterói', index = False, header = None)
+    angra_time_series.to_excel(writer, sheet_name = 'Angra dos Reis', index = False, header = None)
