@@ -8,24 +8,36 @@ from generate_MPLRegressor import generate_MPL
     de de dist. Fonte dos dados: Light S.A (Artigo JCAE 2020 PLANCAP)
     Link análise estatística -> https://www.mathworks.com/help/econ/infer-residuals.html
 """
-def load_generator(arq):
-        
-    # Caminho da base de dados'
-    path = Path(__file__).parent / 'BASE_DE_DADOS' / arq
+def load_data():
+
+    # Caminho da base de dados'    
+    while True:
+        aux = int(input('Digite o valor 1 para o arquivo Bandeira ou 2 para o arquivo Dafeira: '))
+        if aux == 1:
+            path = Path(__file__).parent / 'BASE_DE_DADOS' / 'Bandeira_load.txt'
+            break
+        elif aux == 2:
+            path = Path(__file__).parent / 'BASE_DE_DADOS' / 'Dafeira_load.TXT'
+            break
+        else:
+            print('Favor inserir o valor 1, para o arquivo Bandeira ou tecle, para o arquivo Dafeira!')
+
+
     load_Table = pd.read_csv(path, delimiter = '\t', header = None)
     # convertendo as séries em objeto numpy
-    load_tsdata_2 = load_Table.to_numpy()
+    load_tsdata = load_Table.to_numpy()
+
     # fatiando a série em intervalo de 4 em 4 (cada dado equivale a 15 minutos)
-    hourly_tsdata_2 = load_tsdata_2[::4]
+    hourly_tsdata = load_tsdata[::4]
 
     # Importando a função generate_MPLRegressor onde, uma lista deverá ser fornecida em seu argumento, e está retornará o modelo(net_n), o lag(p_n), as saídas esperadas(Y_n), e a saída obtidas pelo modelo de previsão MLPRegressor(Yhat_n)
-    p, Mdl, Y, Yhat = generate_MPL(hourly_tsdata_2)
+    p, Mdl, Y, Yhat = generate_MPL(hourly_tsdata)
 
     # definindo um intervalo de horas
     Npoints = 168
-    T = len(hourly_tsdata_2)
+    T = len(hourly_tsdata)
     pred_hourly_tsdata_2 = np.zeros(Npoints)
-    pred_hourly_tsdata_2[:p] = hourly_tsdata_2[:p].flatten()
+    pred_hourly_tsdata_2[:p] = hourly_tsdata[:p].flatten()
 
     if Npoints < Yhat.shape[0]:
         pred_hourly_tsdata_2[p: T] = Yhat[p: Npoints]
@@ -55,41 +67,42 @@ def load_generator(arq):
             print('Insira um valor numérico válido!')
 
     pred_hourly_tsdata_2 = pred_hourly_tsdata_2.flatten()
-    load_hourly_tsdata_2 = np.zeros((n, Npoints))
-    load_hourly_tsdata_2[0,:] = pred_hourly_tsdata_2
+    load_hourly_tsdata = np.zeros((n, Npoints))
+    load_hourly_tsdata[0,:] = pred_hourly_tsdata_2
 
     for i in range(n):
         delta_2 = 0.05 * pred_hourly_tsdata_2 * np.random.randn(Npoints)
-        load_hourly_tsdata_2[i, :] = pred_hourly_tsdata_2 + delta_2
+        load_hourly_tsdata[i, :] = pred_hourly_tsdata_2 + delta_2
 
-    load_hourly_tsdata_2 = np.sqrt(3) * 13.8e3 * load_hourly_tsdata_2
+    load_hourly_tsdata = np.sqrt(3) * 13.8e3 * load_hourly_tsdata
 
-    return load_hourly_tsdata_2
+
+    return load_hourly_tsdata
 
 if __name__ == '__main__':
 
+    import matplotlib.pyplot as plt    
+
     while True:
-        Ndl = input('Insira a quantidade de cargas desejada ou tecle enter para 3 cargas: ')
-        if Ndl == '':
-            Ndl = 3
+        N = input('Digite a quantidade de usinas desejadas ou tecle enter para 3: ')
+        if N == '':
+            N = 3
             break
         try:
-            Ndl = int(Ndl)
-            if Ndl > 0:
-                Ndl = int(Ndl)
+            N = int(N)
+            if N > 0:
                 break
             else:
-                print('Insira um valor numérico válido e positivo')
+                print('Insira um valor numérico válido')
         except ValueError as v:
-            print('Insira um valor numérico válido')
+            print(f'Insira um valor numérico válido\nERRO, {v}')
 
     save_path = Path(__file__).parent.parent / 'SERIES_GERADAS' / 'load_hourly_series.xlsx'
 
     with pd.ExcelWriter(save_path) as writer:
-        for i in range(Ndl):
-            arq = input('Insira o nome do arquivo: ')
-            load_hourly_tsdata = load_generator(arq)
-            load_hourly_tsdata_df = pd.DataFrame(load_hourly_tsdata)
-            load_hourly_tsdata_df.to_excel(writer, sheet_name = f'Carga {i + 1}', index = False, header = None)
-
-    print('Fim')
+        for i in  range(N):
+            load_hourly_tsdata = load_data()
+            load_horly_series_df = pd.DataFrame(load_hourly_tsdata)
+            load_horly_series_df.to_excel(writer, sheet_name = f'Carga {i + 1}', header = None, index = False)
+    
+    print('FIM')

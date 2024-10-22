@@ -145,8 +145,11 @@ if __name__ == '__main__':
 
     with pd.ExcelWriter(save_path) as writer:
         for i in  range(Nwt):
+
+            name = input('Insira o nome da cidade: ')
+
             WTG_horly_series = wind_data_generation()
             WTG_horly_series_df = pd.DataFrame(WTG_horly_series)
-            WTG_horly_series_df.to_excel(writer, sheet_name = f'Usina {i + 1}', header = None, index = False)
+            WTG_horly_series_df.to_excel(writer, sheet_name = name, header = None, index = False)
     
     print('FIM')
