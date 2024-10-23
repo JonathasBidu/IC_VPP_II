@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 # Este script gera tarifas de energia para distribuidora e consumidores
 # Premissas:
@@ -16,36 +14,47 @@ import matplotlib.pyplot as plt
         # INTERMEDIÁRIA = R$0.88020
         # FORA PONTA = R$0.57060
 
+def tdist_generator():
 
-horas_ano = 8760 # total de horas
-TDist_hourly_series = np.zeros(horas_ano)
-horas_dia = 24
+    horas_ano = 8760 # total de horas
+    TDist_hourly_series = np.zeros(horas_ano)
+    horas_dia = 24
 
-PONTA = 1.33333
-INTERMEDIARIA = 0.88020
-FORA_PONTA = 0.57060
+    PONTA = 1.33333
+    INTERMEDIARIA = 0.88020
+    FORA_PONTA = 0.57060
 
 
-# Gerar a série horária de tarifas
-for t in range(horas_ano):
-    h = t % 24  # Obter a hora do dia (0 - 23)
-    if 0 <= h < 16:
-        TDist_hourly_series[t] = FORA_PONTA
-    elif 16 <= h < 18:
-        TDist_hourly_series[t] = INTERMEDIARIA
-    elif 18 <= h < 21:
-        TDist_hourly_series[t] = PONTA
-    elif 21 <= h < 22:
-        TDist_hourly_series[t] = INTERMEDIARIA
-    else:
-        TDist_hourly_series[t] = FORA_PONTA
+    # Gerar a série horária de tarifas
+    for t in range(horas_ano):
+        h = t % 24  # Obter a hora do dia (0 - 23)
+        if 0 <= h < 16:
+            TDist_hourly_series[t] = FORA_PONTA
+        elif 16 <= h < 18:
+            TDist_hourly_series[t] = INTERMEDIARIA
+        elif 18 <= h < 21:
+            TDist_hourly_series[t] = PONTA
+        elif 21 <= h < 22:
+            TDist_hourly_series[t] = INTERMEDIARIA
+        else:
+            TDist_hourly_series[t] = FORA_PONTA
+    
+    TDist_hourly_series = TDist_hourly_series.reshape((1, horas_ano))
 
-TDist_hourly_series = TDist_hourly_series.reshape((1, horas_ano))
+    return TDist_hourly_series
 
-# Salvar o DataFrame em um arquivo CSV, Excel ou outro formato
-TDist_hourly_series_df = pd.DataFrame(TDist_hourly_series)
-TDist_hourly_series_df.to_csv("C:\\Users\\jonat\\OneDrive\\Área de Trabalho\\PROJETO_VPP_II\\SERIES_GERADAS\\TDist_hourly_series.csv",
-    sep = ';',
-    index = False,
-    header = None
-    )
+if __name__ == '__main__':
+
+    from pathlib import Path
+    import pandas as pd
+
+    save_path = Path(__file__).parent.parent / 'SERIES_GERADAS' / 'TDist_hourly_series.csv'
+
+    TDist_hourly_series = tdist_generator()
+
+    # Salvar o DataFrame em um arquivo CSV, Excel ou outro formato
+    TDist_hourly_series_df = pd.DataFrame(TDist_hourly_series)
+    TDist_hourly_series_df.to_csv(save_path, sep = ';', index = False, header = None)
+
+    print('FIM')
+ 
