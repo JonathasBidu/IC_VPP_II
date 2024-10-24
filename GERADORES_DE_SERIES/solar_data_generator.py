@@ -47,9 +47,9 @@ Ns = 2000
 sheets = pd.ExcelFile(path)
 
 # Criando o writer para o arquivo de saída
-output_path = Path(__file__).parent.parent / 'SERIES_GERADAS' / 'PVsystem_hourly_series.xlsx'
+save_path = Path(__file__).parent.parent / 'SERIES_GERADAS' / 'PVsystem_hourly_series.xlsx'
 
-with pd.ExcelWriter(output_path) as writer:
+with pd.ExcelWriter(save_path) as writer:
 
     # Iterando sobre as abas da planilha
     for sheet in sheets.sheet_names:
@@ -93,10 +93,7 @@ if __name__ == '__main__':
     for sheet in sheets.sheet_names:
 
         PVpwr_irradiance_hourly_series = pd.read_excel(path, sheet_name = sheet)
-
-        PVpwr_irradiance_hourly_series = PVpwr_irradiance_hourly_series.to_numpy()
-        
-    
+        PVpwr_irradiance_hourly_series = PVpwr_irradiance_hourly_series.to_numpy()  
         idx = np.random.choice(PVpwr_irradiance_hourly_series.shape[0])
 
         plt.title('PVsystem')
