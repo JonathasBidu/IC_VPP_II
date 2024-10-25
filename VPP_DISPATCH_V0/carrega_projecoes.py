@@ -2,6 +2,32 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+'''
+    Este programa carrega as projeções de carga, geração solar, geração eólica, e dados relacionados da vpp.
+
+    - Parâmetros: (Nt, Nl, Ndl, Npv, Nwt)
+        - Nt (int): Número de intervalos de tempo na janela de projeção.
+        - Nl (int): Número de séries de carga a serem carregadas.
+        - Ndl (int): Número de séries de carga desconectada a serem carregadas.
+        - Npv (int): Número de séries de geração solar a serem carregadas.
+        - Nwt (int): Número de séries de geração eólica a serem carregadas.
+
+    - Retorna:
+        -Tuple: Uma tupla contendo arrays numpy representando as séries temporais de carga, geração solar, 
+           geração eólica, carga desconectada de referência, carga desconectada mínima,
+           carga desconectada máxima, PLD (Preço de Liquidação de Diferença), e Tau Dist.
+           - Atributos:
+                - p_l: potência das cargas, shape (Nl, Nt)
+                - p_pv: potência das usinas FV, shape (Npv, Nt)
+                - p_wt: potência das usinas eólicas, shape (Nwt, Nt)
+                - p_dl_ref: potência de referência das cargas (Ndl, Nt)
+                - p_dl_min: potência mínima das cargas, shape (Ndl, Nt)
+                - p_dl_max: potência máxima das cargas, shape (Ndl, Nt)
+                - tau_pdl: tarifa PLD (Preço de Liquidação de Diferença), shape (Nt)
+                - tau_dist: tarifa da distribuidora, shape (Nt,)
+                - tau_dl: tarifa de abatimento, shape (Nt,)
+'''
+
 def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray, ...]:
 
     path = Path(__file__).parent.parent
@@ -64,8 +90,14 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
     PLD_hourly_series = pd.read_csv(path_5, sep = ';', header = None)
     m, _ = PLD_hourly_series.shape
     idx = np.random.choice(m, 1)
-    tau_pld = PLD_hourly_series.iloc[idx, inicio : (inicio + Nt)]
+    tau_pld = PLD_hourly_series.iloc[idx, inicio : (inicio + Nt)].values
 
+    # Carregamento das projeções de tarifa da distribuidora
+    path_6 = path / 'SERIES_GERADAS' / 'TDist_hourly_series.csv'
+    TDist_hourly_series = pd.read_csv(path_6, sep = ';', header = None)
+    m, _ = TDist_hourly_series.shape
+    tau_dist = TDist_hourly_series.iloc[inicio : (inicio + Nt)].values
+    tau_dl = 0.15 * TDist_hourly_series.iloc[inicio: (inicio + Nt)].values # Abatimento de 15% sobre o valor da tarifa
 
     dl_delta_min = np.zeros(int(Ndl))
     dl_delta_max = np.zeros(int(Ndl))
@@ -113,7 +145,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
 
 
 
-    return p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld
+    return p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl
 
 # Exemplos de uso
 if __name__ == '__main__':
@@ -131,7 +163,7 @@ if __name__ == '__main__':
 
    
 
-    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
     # plot das projeções de cargas Não despacháveis
     for i in range(Nl):
@@ -172,7 +204,7 @@ if __name__ == '__main__':
     # plot da projeções das usinas éolicas
     for i in range(Npv):
 
-        title = f'Usina eólica {i + 1}'
+        title = f'Usina Eólica {i + 1}'
         plt.figure(figsize = (10, 4))
         plt.title(title)
         plt.plot(p_wt[i, :], 'r')
@@ -180,5 +212,16 @@ if __name__ == '__main__':
         plt.ylabel('potência em MW')
         plt.show()
 
-    plt.plot(tau_pld)
+    # Plotagem das projeções de PLD
+    plt.figure(figsize = (10, 4))
+    plt.title('Preço de Liquidação de Diferença')
+    plt.plot(tau_pld[0, :])
+    plt.show()
+    
+    # Plotagem da projeção da Tarifa da distribuição e da compensação para o usuário
+    plt.figure(figsize = (10, 4))
+    plt.title('Tarifa da Distribuição e Compensação')
+    plt.plot(tau_dist[0, :Nt], 'b')
+    plt.plot(tau_dl[0, :Nt], 'r')
+    plt.legend(['Dist', 'Desc 15%'])
     plt.show()
