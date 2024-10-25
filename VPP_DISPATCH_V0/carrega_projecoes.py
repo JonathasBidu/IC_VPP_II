@@ -42,7 +42,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
 
         load_hourly_series = pd.read_excel(path_1, header = None, sheet_name = sheet)
         m, _ = load_hourly_series.shape
-        idx = np.random.choice(m, 1)
+        idx = np.random.choice(m)
 
         p_l[i, :] = load_hourly_series.iloc[idx, inicio: (inicio + Nt)].values / 1e6
 
@@ -55,7 +55,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
 
         dload_hourly_series = pd.read_excel(path_2, header = None, sheet_name = sheet)
         m, _ = dload_hourly_series.shape
-        idx = np.random.choice(m, 1)
+        idx = np.random.choice(m)
 
         p_dl_ref[i, :] = dload_hourly_series.iloc[idx, inicio: (inicio + Nt)].values / 1e6
 
@@ -68,7 +68,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
 
         PVpwr_hourly_series = pd.read_excel(path_3, header = None, sheet_name = sheet)
         m, _ = PVpwr_hourly_series.shape
-        idx = np.random.choice(m, 1)
+        idx = np.random.choice(m)
 
         p_pv[i, :] = PVpwr_hourly_series.iloc[idx,  inicio: (inicio + Nt)].values / 1e6
 
@@ -81,7 +81,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
 
         WTGsystem_hourly_series = pd.read_excel(path_4, header = None, sheet_name = sheet)
         m, _ = PVpwr_hourly_series.shape
-        idx = np.random.choice(m, 1)
+        idx = np.random.choice(m)
 
         p_wt[i, :] = WTGsystem_hourly_series.iloc[idx,  inicio: (inicio + Nt)].values / 1e6
 
@@ -89,7 +89,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
     path_5 = path / 'SERIES_GERADAS' / 'PLD_hourly_series.csv'
     PLD_hourly_series = pd.read_csv(path_5, sep = ';', header = None)
     m, _ = PLD_hourly_series.shape
-    idx = np.random.choice(m, 1)
+    idx = np.random.choice(m)
     tau_pld = PLD_hourly_series.iloc[idx, inicio : (inicio + Nt)].values
 
     # Carregamento das projeções de tarifa da distribuidora
@@ -215,7 +215,7 @@ if __name__ == '__main__':
     # Plotagem das projeções de PLD
     plt.figure(figsize = (10, 4))
     plt.title('Preço de Liquidação de Diferença')
-    plt.plot(tau_pld[0, :])
+    plt.plot(tau_pld)
     plt.show()
     
     # Plotagem da projeção da Tarifa da distribuição e da compensação para o usuário
