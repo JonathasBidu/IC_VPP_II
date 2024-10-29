@@ -21,7 +21,7 @@ def func_PO2(y, data):
     tau_dl = data['tau_dl']    
 
     # Separção das variáveis no vetor solução y
-    p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch = decomp_vetor_y(y, Nt, Ndl, Nbat)
+    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Ndl, Nbat)
 
     # reshape de vetor em matrizes
     p_dl = p_dl.reshape((Ndl, Nt))

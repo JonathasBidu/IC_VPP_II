@@ -166,6 +166,15 @@ if __name__ == '__main__':
     p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
     data['tau_dl'] = tau_dl
+    data['p_pv'] = p_pv
+    data['p_wt'] = p_wt
+    data['p_l'] = p_l
+    data['tau_dist'] = tau_dist
+    data['tau_dl'] = tau_dl
+    data['tau_pld'] = tau_pld
+    data['p_dl_ref'] = p_dl_ref
+    data['p_dl_min'] = p_dl_min
+    data['p_dl_max'] = p_dl_max
 
     Nr = Nt * Nbm + Nt * Ndl
     Ni = Nt * Nbm + Nt * Ndl

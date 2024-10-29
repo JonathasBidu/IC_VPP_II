@@ -1,5 +1,5 @@
 import numpy as np
-from func_PO1 import vpp_func_PO1
+from func_aux import func
 from constraints_PO1 import const_PO1
 from get_limits_PO1 import vpplimits_PO1
 from decomp_vetor_PO1 import decomp_vetor_x
@@ -36,7 +36,7 @@ def vpp_dispatch_PO1(vpp_data):
 
         def _evaluate(self, x, out, *args, **kwargs):
 
-            out['F'] = np.array([ - vpp_func_PO1(x, self.data)])
+            out['F'] = np.array([ - func(x, self.data)])
             out['G'] = const_PO1(x, self.data)
 
     problem = MyProblem(vpp_data,
@@ -63,15 +63,15 @@ def vpp_dispatch_PO1(vpp_data):
     results['Lucro'] = - res.F
     x = res.X
 
-    # p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
+    p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
 
-    # print(f'\nO lucro dessa simulação é {- res.F[0]:.2f} R$')
-    # print(f'\nO total de violação foi {res.CV[0]} R$')
+    print(f'\nO lucro dessa simulação é {- res.F[0]:.2f} R$')
+    print(f'\nO total de violação foi {res.CV[0]} R$')
 
-    # results['p_bm'] = p_bm.reshape((Nbm, Nt))
-    # results['u_bm'] = u_bm.reshape((Nbm, Nt))
-    # results['p_dl'] = p_dl.reshape((Ndl, Nt))
-    # results['u_dl'] = u_dl.reshape((Ndl, Nt))
+    results['p_bm'] = p_bm.reshape((Nbm, Nt))
+    results['u_bm'] = u_bm.reshape((Nbm, Nt))
+    results['p_dl'] = p_dl.reshape((Ndl, Nt))
+    results['u_dl'] = u_dl.reshape((Ndl, Nt))
 
 
     return results, x

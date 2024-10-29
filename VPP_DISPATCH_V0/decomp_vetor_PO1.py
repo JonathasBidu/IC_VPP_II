@@ -21,11 +21,11 @@ import numpy as np
             - u_dl : estado(ligado/desligado) das cargas despachaveis.
 '''
 
-def decomp_vetor_x(x, Nt, Nbm, Ndl):
+def decomp_vetor_x(x, Nt, Nbm, Nl):
 
     # separacao entre xr e xi
-    Nr = (Nt * Nbm) + (Nt * Ndl)
-    Ni = (Nt * Nbm) + (Nt * Ndl)
+    Nr = (Nt * Nbm) + (Nt * Nl)
+    Ni = (Nt * Nbm) + (Nt * Nl)
 
     # criação do vetor de varáveis reais xr
     inicio = 0
@@ -37,10 +37,10 @@ def decomp_vetor_x(x, Nt, Nbm, Ndl):
     fim = (Nbm * Nt)
     p_bm = xr[inicio: fim]
 
-    # obtenção de p_dl (potência da carga despachavel)
+    # obtenção de p_l (potência da carga NÃO despachavel)
     inicio = fim
-    fim = fim + (Nt * Ndl)
-    p_dl = xr[inicio: fim]
+    fim = fim + (Nt * Nl)
+    p_l = xr[inicio: fim]
 
     # criação do vetor de varáveis reais xi
     inicio = 0
@@ -52,35 +52,36 @@ def decomp_vetor_x(x, Nt, Nbm, Ndl):
     fim = (Nbm * Nt)
     u_bm = xi[inicio: fim]
 
-    # obtenção de u_dl (estado da carga despachavel(ligado/desligado))
+    # obtenção de u_l (estado da carga NÃO despachavel(ligado/desligado))
     inicio = fim
-    fim = fim + (Nt * Ndl)
-    u_dl = xi[inicio: fim]
+    fim = fim + (Nt * Nl)
+    u_l = xi[inicio: fim]
 
     # lógica para caso o número seja maior 0.5 ela receba o sinal alto ou caso ao contrário receba o sinal baixo
     u_bm = np.float64(u_bm > 0.5)
-    u_dl = np.float64(u_dl > 0.5)
+    u_l = np.float64(u_l > 0.5)
 
-    return p_bm, p_dl, u_bm, u_dl
+    return p_bm, p_l, u_bm, u_l
 
-# # Array de teste:
-# from vpp_data import vpp
+# Exemplos de uso
+if __name__ == '__main__':
+    from vpp_data import vpp
 
-# data = vpp()
+    data = vpp()
 
-# Nt = 24 # Número de instantes de tempo a frente
-# data['Nt'] = Nt
-# Nbm = data['Nbm']
-# Ndl = data['Ndl']
+    Nt = 24 # Número de instantes de tempo a frente
+    data['Nt'] = Nt
+    Nbm = data['Nbm'] # Nbm = 2
+    Nl = data['Nl'] # Ndl = 2
 
-# Nr = Nt * Nbm + Nt * Ndl
-# Ni = Nt * Nbm + Nt * Ndl
+    Nr = Nt * Nbm + Nt * Nl
+    Ni = Nt * Nbm + Nt * Nl
 
-# x = np.random.rand(Nr + Ni)
+    x = np.random.rand(Nr + Ni)
 
-# p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
+    p_bm, p_l, u_bm, u_l = decomp_vetor_x(x, Nt, Nbm, Nl)
 
-# print(f' o tipo é p_bm {type(p_bm)} e o  seu shape é {p_bm.shape}','\n', p_bm, '\n')
-# print(f' o tipo é u_bm {type(u_bm)} e o  seu shape é {u_bm.shape}','\n', u_bm, '\n')
-# print(f' o tipo é p_dl {type(p_dl)} e o  seu shape é {p_dl.shape}','\n', p_dl, '\n')
-# print(f' o tipo é u_bm {type(u_dl)} e o  seu shape é {u_dl.shape}','\n', u_dl, '\n')
+    print(f' p_bm é do tipo {type(p_bm)}\n e o  seu shape é {p_bm.shape}','\n', p_bm, '\n')
+    print(f' u_bm é do tipo {type(u_bm)}\n e o  seu shape é {u_bm.shape}','\n', u_bm, '\n')
+    print(f' p_dl é do tipo {type(p_l)}\n e o  seu shape é {p_l.shape}','\n', p_l, '\n')
+    print(f' u_bm é do tipo {type(u_l)}\n e o  seu shape é {u_l.shape}','\n', u_l, '\n')

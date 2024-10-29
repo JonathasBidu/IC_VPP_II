@@ -26,12 +26,13 @@ import numpy as np
         - u_dch: Vetor de status de descarga da bateria, forma (Nbat * Nt, 1)
 """
 
-def decomp_vetor_y(y, Nt: int, Ndl: int, Nbat: int)-> tuple:
+def decomp_vetor_y(y, Nt: int, Nl: int, Nbat: int)-> tuple:
 
     # Calculando as variáveis reais e inteira
-    Nr = (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt)
-    Ni = (Nbat * Nt) + (Nbat * Nt)
+    Nr = (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt) + (Nl * Nt)
+    Ni = (Nbat * Nt) + (Nbat * Nt) + (Nl * Nt)
 
+    # Criação do vetor de variáveis reais
     inicio = 0
     fim = Nr
     yr = np.array(y[inicio: fim])
@@ -51,6 +52,12 @@ def decomp_vetor_y(y, Nt: int, Ndl: int, Nbat: int)-> tuple:
     fim = fim + (Nbat * Nt)
     soc = yr[inicio: fim]
 
+    # Obtenção de p_l
+    inicio = fim
+    fim = fim + (Nl * Nt)
+    p_l = yr[inicio: fim]
+
+    # Criação do vetor de variáveis inteiras
     inicio = 0
     fim = Ni
     yi = np.array(y[inicio: fim])
@@ -65,30 +72,43 @@ def decomp_vetor_y(y, Nt: int, Ndl: int, Nbat: int)-> tuple:
     fim = fim + (Nbat * Nt)
     u_dch = yi[inicio: fim]
 
+    # obtenção de u_l
+    inicio = fim
+    fim = fim + (Nl * Nt)
+    u_l = yi[inicio: fim]
+
     u_chg = np.float64(u_chg > 0.5)
     u_dch = np.float64(u_dch > 0.5)
+    u_l = np.float64(u_l > 0.5)
 
-    return p_chg, p_dch, soc, u_chg, u_dch
+    return p_chg, p_dch, soc, p_l, u_chg, u_dch, u_l
+
 
 
 # Exemplos de uso
 if __name__ == '__main__':
+
+    from vpp_data import vpp
+
+    data = vpp()
         
     Nt = 24 # Número de instantes de tempo a frente
-    Nbm = 2 # Número de usinas de biomassa
-    Ndl = 3 # Número de cargas despacháveis
-    Nbat = 4 # Número de bateria
-    Nr = (Nt * Ndl) + (Nt * Nbat) + (Nbat * Nt) + (Nbat * Nt)
-    Ni = (Nt * Ndl) + (Nbat * Nt) + (Nbat * Nt)
+    data['Nt'] = Nt
+    Nbm = data['Nbm'] # Número de usinas de biomassa
+    Nl = data['Ndl'] # Número de cargas despacháveis
+    Nbat = data['Nbat'] # Número de bateria
+
+    Nr = (Nt * Nl) + (Nt * Nbat) + (Nbat * Nt) + (Nbat * Nt)
+    Ni = (Nt * Nl) + (Nbat * Nt) + (Nbat * Nt)
 
     y = np.random.rand(Nr + Ni)
-    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Ndl, Nbat)
+    p_chg, p_dch, soc, p_dl, u_chg, u_dch, u_dl = decomp_vetor_y(y, Nt, Nl, Nbat)
 
-    # xr = np.concatenate((p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch))
-    # print(p_dl, f' o tipo é p_dl{type(p_dl)} e o  seu shape é {p_dl.shape}','\n')
-    print(p_chg, f' o tipo é p_chg{type(p_chg)} e o  seu shape é {p_chg.shape}','\n')
-    print(p_dch, f' o tipo é p_dch{type(p_dch)} e o  seu shape é {p_dch.shape}','\n')
-    print(soc, f' o tipo é soc{type(soc)} e o  seu shape é {soc.shape}','\n')
-    # print(u_dl, f' o tipo é u_dl{type(u_dl)} e o  seu shape é {u_dl.shape}','\n')
-    print(u_chg, f' o tipo é u_chg{type(u_chg)} e o  seu shape é {u_chg.shape}','\n')
-    print(u_dch, f' o tipo é u_dch{type(u_dch)} e o  seu shape é {u_dch.shape}','\n')
+    xr = np.concatenate((p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch))
+    print(p_dl, f'p_dl ==>> {type(p_dl)} e o  seu shape é {p_dl.shape}','\n')
+    print(p_chg, f'p_chg ==>> {type(p_chg)} e o  seu shape é {p_chg.shape}','\n')
+    print(p_dch, f'p_dch ==>> {type(p_dch)} e o  seu shape é {p_dch.shape}','\n')
+    print(soc, f'soc ==>> {type(soc)} e o  seu shape é {soc.shape}','\n')
+    print(u_dl, f'u_dl ==>> {type(u_dl)} e o  seu shape é {u_dl.shape}','\n')
+    print(u_chg, f'u_chg ==>> {type(u_chg)} e o  seu shape é {u_chg.shape}','\n')
+    print(u_dch, f'u_dch ==>> {type(u_dch)} e o  seu shape é {u_dch.shape}','\n')
