@@ -26,7 +26,7 @@ import numpy as np
         - u_dch: Vetor de status de descarga da bateria, forma (Nbat * Nt, 1)
 """
 
-def decomp_vetor_PO2(y, Nt: int, Ndl: int, Nbat: int)-> tuple:
+def decomp_vetor_y(y, Nt: int, Ndl: int, Nbat: int)-> tuple:
 
     # Calculando as variáveis reais e inteira
     Nr = (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt)
@@ -71,22 +71,24 @@ def decomp_vetor_PO2(y, Nt: int, Ndl: int, Nbat: int)-> tuple:
     return p_chg, p_dch, soc, u_chg, u_dch
 
 
-# # Array de teste:
-# Nt = 24 # Número de instantes de tempo a frente
-# Nbm = 2 # Número de usinas de biomassa
-# Ndl = 3 # Número de cargas despacháveis
-# Nbat = 4 # Número de bateria
-# Nr = (Nt * Ndl) + (Nt * Nbat) + (Nbat * Nt) + (Nbat * Nt)
-# Ni = (Nt * Ndl) + (Nbat * Nt) + (Nbat * Nt)
+# Exemplos de uso
+if __name__ == '__main__':
+        
+    Nt = 24 # Número de instantes de tempo a frente
+    Nbm = 2 # Número de usinas de biomassa
+    Ndl = 3 # Número de cargas despacháveis
+    Nbat = 4 # Número de bateria
+    Nr = (Nt * Ndl) + (Nt * Nbat) + (Nbat * Nt) + (Nbat * Nt)
+    Ni = (Nt * Ndl) + (Nbat * Nt) + (Nbat * Nt)
 
-# y = np.random.rand(Nr + Ni)
-# p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch = decomp_vetor_PO2(y, Nt, Ndl, Nbat)
+    y = np.random.rand(Nr + Ni)
+    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Ndl, Nbat)
 
-# xr = np.concatenate((p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch))
-# print(p_dl, f' o tipo é p_dl{type(p_dl)} e o  seu shape é {p_dl.shape}','\n')
-# print(p_chg, f' o tipo é p_chg{type(p_chg)} e o  seu shape é {p_chg.shape}','\n')
-# print(p_dch, f' o tipo é p_dch{type(p_dch)} e o  seu shape é {p_dch.shape}','\n')
-# print(soc, f' o tipo é soc{type(soc)} e o  seu shape é {soc.shape}','\n')
-# print(u_dl, f' o tipo é u_dl{type(u_dl)} e o  seu shape é {u_dl.shape}','\n')
-# print(u_chg, f' o tipo é u_chg{type(u_chg)} e o  seu shape é {u_chg.shape}','\n')
-# print(u_dch, f' o tipo é u_dch{type(u_dch)} e o  seu shape é {u_dch.shape}','\n')
+    # xr = np.concatenate((p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch))
+    # print(p_dl, f' o tipo é p_dl{type(p_dl)} e o  seu shape é {p_dl.shape}','\n')
+    print(p_chg, f' o tipo é p_chg{type(p_chg)} e o  seu shape é {p_chg.shape}','\n')
+    print(p_dch, f' o tipo é p_dch{type(p_dch)} e o  seu shape é {p_dch.shape}','\n')
+    print(soc, f' o tipo é soc{type(soc)} e o  seu shape é {soc.shape}','\n')
+    # print(u_dl, f' o tipo é u_dl{type(u_dl)} e o  seu shape é {u_dl.shape}','\n')
+    print(u_chg, f' o tipo é u_chg{type(u_chg)} e o  seu shape é {u_chg.shape}','\n')
+    print(u_dch, f' o tipo é u_dch{type(u_dch)} e o  seu shape é {u_dch.shape}','\n')

@@ -77,30 +77,34 @@ def vpplimits_PO1(data):
 
 
 # # Exemplo de uso:
-# from vpp_data import vpp
-# from carrega_projecoes import projecoes
+if __name__ == '__main__':
 
-# data = vpp()
+    from vpp_data import vpp
+    from carrega_projecoes import projecoes
 
-# Nt = 24  # Número de pontos de dados na série temporal
-# data['Nt'] = Nt
-# Nl = data['Nl']
-# Ndl = data['Ndl']
-# Npv = data['Npv']
-# Nwt = data['Nwt']
-# Nbm = data['Nbm']
+    data = vpp()
 
-# p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+    Nt = 24  # Número de pontos de dados na série temporal
+    data['Nt'] = Nt
+    Nl = data['Nl']
+    Ndl = data['Ndl']
+    Npv = data['Npv']
+    Nwt = data['Nwt']
+    Nbm = data['Nbm']
 
-# data['p_dl_min'] = p_dl_min
-# data['p_dl_max'] = p_dl_max
+    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
-# lb, ub = vpplimits_PO1(data)
+    data['p_dl_min'] = p_dl_min
+    data['p_dl_max'] = p_dl_max
 
-# for i in range(len(lb)):
+    lb, ub = vpplimits_PO1(data)
 
-#     if lb[i] > ub[i]:
-#         print('erro')
-#         break
+    for i in range(len(lb)):
 
-# print('Deu certo\n') 
+        if lb[i] > ub[i]:
+            print('erro')
+            break
+
+    print(f'ub => {ub}\n')
+    print(f'lb => {lb}')
+   

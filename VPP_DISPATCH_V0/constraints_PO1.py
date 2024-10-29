@@ -113,31 +113,32 @@ def const_PO1(x: np.ndarray, data: dict)-> np.ndarray:
     return c_ineq
 
 # # Exemplo de uso:
-# from vpp_data import vpp
-# from carrega_projecoes import projecoes
+if __name__ == '__main__':
+    from vpp_data import vpp
+    from carrega_projecoes import projecoes
 
-# data = vpp()
+    data = vpp()
 
-# Nt = 24
-# data['Nt'] = Nt
-# Nbm = data['Nbm']
-# Nl = data['Nl']
-# Ndl = data['Ndl']
-# Npv = data['Npv']
-# Nwt = data['Nwt']
+    Nt = 24
+    data['Nt'] = Nt
+    Nbm = data['Nbm']
+    Nl = data['Nl']
+    Ndl = data['Ndl']
+    Npv = data['Npv']
+    Nwt = data['Nwt']
 
-# p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
-# data['p_dl'] = p_dl_ref
-# data['p_dl_max'] = p_dl_max
-# data['p_dl_min'] = p_dl_min
+    data['p_dl'] = p_dl_ref
+    data['p_dl_max'] = p_dl_max
+    data['p_dl_min'] = p_dl_min
 
-# Nr = Nt * Nbm + Nt * Nl
-# Ni = Nt * Nbm
-# x = np.random.rand(Nr + Ni)
+    Nr = Nt * Nbm + Nt * Nl
+    Ni = Nt * Nbm
+    x = np.random.rand(Nr + Ni)
 
-# constraints = const_PO1(x, data)
+    constraints = const_PO1(x, data)
 
-# print(f'Restrições do problema de primeiro estágio \n')
-# print(f'O vetor de restrições do 1o estágio tem shape {constraints.shape} \n')
-# print(constraints, '\n')
+    print(f'Restrições do problema de primeiro estágio \n')
+    print(f'O vetor de restrições do 1o estágio tem shape {constraints.shape} \n')
+    print(constraints, '\n')

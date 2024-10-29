@@ -80,28 +80,30 @@ def vpplimits_PO2(data):
     return lb, ub
 
 # Exemplo de uso
-from vpp_data import vpp
-from carrega_projecoes import projecoes
+if __name__ == '__main__':
 
-data = vpp()
+    from vpp_data import vpp
+    from carrega_projecoes import projecoes
 
-Nt = 24
-data["Nt"] = Nt
-Nl = data['Nl']
-Ndl = data['Ndl']
-Npv = data['Npv']
-Nwt = data['Nwt']
+    data = vpp()
 
-p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+    Nt = 24
+    data["Nt"] = Nt
+    Nl = data['Nl']
+    Ndl = data['Ndl']
+    Npv = data['Npv']
+    Nwt = data['Nwt']
+
+    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
 
-lb, ub = vpplimits_PO2(data)
+    lb, ub = vpplimits_PO2(data)
 
-for i in range(len(lb)):
-    if ub[i] < lb[i]:
-        print(f'erro {i + 1}')
-        break
-print(f'O shape de lb é {lb.shape}\n')
-print(f'O shape de ub é {ub.shape}\n')
-print('Deu certo!\n')
+    for i in range(len(lb)):
+        if ub[i] < lb[i]:
+            print(f'erro {i + 1}')
+            break
+    print(f'lb é {lb}\n')
+    print(f'ub é {ub}')
+    
 

@@ -1,4 +1,4 @@
-from decomp_vetor_PO2 import decomp_vetor_PO2
+from decomp_vetor_PO2 import decomp_vetor_y
 import numpy as np
 
 def custo_PO2(x, Cbm, data):

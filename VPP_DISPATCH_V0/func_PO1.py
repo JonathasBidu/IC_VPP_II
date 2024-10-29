@@ -148,30 +148,33 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Nscenarios: int)-> float:
     
     return fval
 
-# # Exemplo de uso:
-# from vpp_data import vpp
-# from carrega_projecoes import projecoes
+# Exemplo de uso:
+if __name__ == '__main__':
+    from vpp_data import vpp
+    from carrega_projecoes import projecoes
 
-# data = vpp()
+    data = vpp()
 
-# Nt = 24
-# data['Nt'] = Nt
-# Nbm = data['Nbm']
-# Nl = data['Nl']
-# Ndl = data['Ndl']
-# Npv = data['Npv']
-# Nwt = data['Nwt']
+    Nt = 24
+    data['Nt'] = Nt
+    Nbm = data['Nbm']
+    Nl = data['Nl']
+    Ndl = data['Ndl']
+    Npv = data['Npv']
+    Nwt = data['Nwt']
 
-# p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
-# data['tau_dl'] = tau_dl
+    data['tau_dl'] = tau_dl
 
-# Nr = Nt * Nbm + Nt * Ndl
-# Ni = Nt * Nbm + Nt * Ndl
-# x = np.random.rand(Nr + Ni)
+    Nr = Nt * Nbm + Nt * Ndl
+    Ni = Nt * Nbm + Nt * Ndl
+    x = np.random.rand(Nr + Ni)
 
-# func = vpp_func_PO1(x, data)
+    Nscenarios = 2
 
-# print('Vizualizão da função objetivo do problema de primeiro estágio \n')
-# print(func)
-# print(type(func))
+    func = vpp_func_PO1(x, data, Nscenarios)
+
+    print('Vizualizão da função objetivo do problema de primeiro estágio \n')
+    print(func)
+    print(type(func))

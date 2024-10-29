@@ -85,7 +85,7 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
 
         p_wt[i, :] = WTGsystem_hourly_series.iloc[idx,  inicio: (inicio + Nt)].values / 1e6
 
-    # Carregamento das projeções de Preço de Liquidação de Diferença (PLD)
+    # Carregamento das projeções do Preço de Liquidação de Diferença (PLD)
     path_5 = path / 'SERIES_GERADAS' / 'PLD_hourly_series.csv'
     PLD_hourly_series = pd.read_csv(path_5, sep = ';', header = None)
     m, _ = PLD_hourly_series.shape
@@ -96,8 +96,8 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
     path_6 = path / 'SERIES_GERADAS' / 'TDist_hourly_series.csv'
     TDist_hourly_series = pd.read_csv(path_6, sep = ';', header = None)
     m, _ = TDist_hourly_series.shape
-    tau_dist = TDist_hourly_series.iloc[inicio : (inicio + Nt)].values
-    tau_dl = 0.15 * TDist_hourly_series.iloc[inicio: (inicio + Nt)].values # Abatimento de 15% sobre o valor da tarifa
+    tau_dist = TDist_hourly_series.iloc[0, inicio : (inicio + Nt)].values
+    tau_dl = 0.15 * TDist_hourly_series.iloc[0, inicio: (inicio + Nt)].values # Abatimento de 15% sobre o valor da tarifa
 
     dl_delta_min = np.zeros(int(Ndl))
     dl_delta_max = np.zeros(int(Ndl))
@@ -225,3 +225,4 @@ if __name__ == '__main__':
     plt.plot(tau_dl[0, :Nt], 'r')
     plt.legend(['Dist', 'Desc 15%'])
     plt.show()
+    

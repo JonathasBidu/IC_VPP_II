@@ -1,5 +1,5 @@
 import numpy as np
-from decomp_vetor_PO2 import decomp_vetor_PO2
+from decomp_vetor_PO2 import decomp_vetor_y
 '''
     Esta função contém as restrições do problema de 1° estágio.
 
@@ -51,7 +51,7 @@ def const_PO2(y, data: dict):
     p_bat_max = data['p_bat_max']
 
     # Separção das variáveis no vetor solução
-    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_PO2(y, Nt, Nbat)
+    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat)
 
     # reshape de vetrore em matrizes
     p_chg = p_chg.reshape((Nbat, Nt))
@@ -94,31 +94,32 @@ def const_PO2(y, data: dict):
     c_ineq = c_bat
    
     return c_ineq  
+# Exemplos de uso
+if __name__ == '__main__':
+        
+    from vpp_data import vpp
+    from carrega_projecoes import projecoes
 
-# # Array de teste
-# from vpp_data import vpp
-# from carrega_projecoes import projecoes
 
+    data = vpp()
 
-# data = vpp()
+    Nt = 24 # Número de instantes de tempo a frente
+    data['Nt'] = Nt
+    Ndl = 3 # Número de cargas despacháveis
+    Nbat = 4 # Número de bateria
+    Nl = data['Nl']
+    Ndl = data['Ndl']
+    Nwt = data['Nwt']
+    Npv = data['Npv']
+    Nr = (Nt * Ndl) + (Nt * Nbat) + (Nbat * Nt) + (Nbat * Nt)
+    Ni = (Nt * Ndl) + (Nbat * Nt) + (Nbat * Nt)
+    p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
-# Nt = 24 # Número de instantes de tempo a frente
-# data['Nt'] = Nt
-# Ndl = 3 # Número de cargas despacháveis
-# Nbat = 4 # Número de bateria
-# Nl = data['Nl']
-# Ndl = data['Ndl']
-# Nwt = data['Nwt']
-# Npv = data['Npv']
-# Nr = (Nt * Ndl) + (Nt * Nbat) + (Nbat * Nt) + (Nbat * Nt)
-# Ni = (Nt * Ndl) + (Nbat * Nt) + (Nbat * Nt)
-# p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+    data['p_dl_min'] = p_dl_min
+    data['p_dl_max'] = p_dl_max
 
-# data['p_dl_min'] = p_dl_min
-# data['p_dl_max'] = p_dl_max
+    y = np.random.rand(Nr + Ni)
 
-# y = np.random.rand(Nr + Ni)
+    c = const_PO2(y, data)
 
-# c = const_PO2(y, data)
-
-# print(c, f' o tipo é c{type(c)} e o  seu shape é {c.shape}','\n')
+    print(c, f' o tipo é c{type(c)} e o  seu shape é {c.shape}','\n')

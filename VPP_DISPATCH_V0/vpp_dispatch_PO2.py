@@ -2,7 +2,7 @@ import numpy as np
 from func_PO2 import func_PO2
 from constraints_PO2 import const_PO2
 from get_limits_PO2 import vpplimits_PO2
-from decomp_vetor_PO2 import decomp_vetor_PO2
+from decomp_vetor_PO2 import decomp_vetor_y
 from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.optimize import minimize
@@ -106,7 +106,7 @@ def vpp_dispatch_PO2(vpp_data):
     print(f'\nO total de violações foi {res.CV[0]:.2f}\n')
     
     # Decompõe o vetor de variáveis de decisão em matrizes
-    p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch = decomp_vetor_PO2(y, Nt, Ndl, Nbat) 
+    p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch = decomp_vetor_y(y, Nt, Ndl, Nbat) 
 
     # Reshape dos vetores em matrizes
     results['p_dl'] = p_dl.reshape((Ndl, Nt))
