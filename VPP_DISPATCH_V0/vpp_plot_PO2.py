@@ -6,26 +6,20 @@ def plot(data):
     Nt = data['Nt']
     t = np.arange(1, Nt + 1)
 
-    Ndl = data['Ndl']
-    p_dl_ref = data['p_dl_ref']
-    p_dl_min = data['p_dl_min']
-    p_dl_max = data['p_dl_max']
+    # Plot da cargas NÃO despacháveis
+    Nl = data['Nl']
+    p_l = data['p_l']
 
-    p_dl = data['p_dl']
-
-    for i in range(Ndl):
+    for i in range(Nl):
 
         plt.figure(figsize = (12, 5))
-        plt.title(f'Carga {i + 1}')
-        plt.plot(p_dl_max[i, :])
-        plt.plot(p_dl_min[i, :])
-        plt.plot(p_dl_ref[i, :])
-        plt.plot(p_dl[i, :])
+        plt.title(f'Carga NÃO despachável{i + 1}')
+        plt.plot(p_l[i, :])
         plt.xlabel('hora')
         plt.ylabel('Potência em MW')
-        plt.legend(['ref', 'min', 'max', 'desp'])
         plt.show()
 
+    # Plot dos Armazenadores
     Nbat = data['Nbat']
     p_chg = data['p_chg']
     p_dch = data['p_dch']

@@ -1,5 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from vpp_create import vpp_create
 from carrega_projecoes import projecoes
 from vpp_dispatch_PO2 import vpp_dispatch_PO2
@@ -45,11 +43,9 @@ vpp_data['p_l'], vpp_data['p_pv'], vpp_data['p_wt'], vpp_data['p_dl_ref'], vpp_d
 
 results, x = vpp_dispatch_PO2(vpp_data)
 
-vpp_data['p_dl'] = results['p_dl']
 vpp_data['p_chg'] = results['p_chg']
 vpp_data['p_dch'] = results['p_dch']
 vpp_data['soc'] = results['soc']
-vpp_data['u_dl'] = results['u_dl']
 vpp_data['u_chg'] = results['u_chg']
 vpp_data['u_dch'] = results['u_dch']
 

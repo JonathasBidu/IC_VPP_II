@@ -42,8 +42,8 @@ def vpp_dispatch_PO2(vpp_data):
     Nbat = vpp_data['Nbat']
        
     # Definição das variáveis inteiras e do número de variáveis
-    Nr = (Ndl * Nt) + (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt) 
-    Ni = (Ndl * Nt) + (Nbat * Nt) + (Nbat * Nt) 
+    Nr = (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt) 
+    Ni = (Nbat * Nt) + (Nbat * Nt) 
     
     # Número de variáveis
     nvars = Nr + Ni
@@ -52,9 +52,8 @@ def vpp_dispatch_PO2(vpp_data):
     # Quantidade de restrições das baterias
     Nbatc = ((Nt - 1) * Nbat) + (Nt*Nbat) + (Nt*Nbat) + (Nt*Nbat) + ((Nt - 1) * Nbat)   
      # Quantidade de restrições das cargas despachaveis
-    Ndlc = (Nt*Ndl) + (Nt*Ndl)      
     # Quantidade total de restrições                                                   
-    n_constr_ieq = Ndlc + Nbatc
+    n_constr_ieq = Nbatc
 
     # obtendo os limites superiores e inferiores
     lb, ub = vpplimits_PO2(vpp_data)
@@ -78,24 +77,24 @@ def vpp_dispatch_PO2(vpp_data):
                         xu = ub
                         )
     
-    algorithm = GA(pop_size = 50)
-    termination = (('n_gen', 50))  
+    algorithm = GA(pop_size = 250)
+    termination = (('n_gen', 150))  
 
     # MODELO FEITO COM PENALIDADES NAS RESTRIÇÕES
-    from pymoo.constraints.as_penalty import ConstraintsAsPenalty
-    from pymoo.core.evaluator import Evaluator
-    from pymoo.core.individual import Individual
+    # from pymoo.constraints.as_penalty import ConstraintsAsPenalty
+    # from pymoo.core.evaluator import Evaluator
+    # from pymoo.core.individual import Individual
 
-    res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
-    res = Evaluator().eval(problem, Individual(X = res.X))
+    # res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
+    # res = Evaluator().eval(problem, Individual(X = res.X))
 
     # MODELO SEM PENALIDADES DE RESTRIÇÃO
-    # res = minimize(problem,
-    #                algorithm,
-    #                termination,
-    #                seed = 1,
-    #                verbose = True
-    #                )
+    res = minimize(problem,
+                   algorithm,
+                   termination,
+                   seed = 1,
+                   verbose = True
+                   )
     
     # GERAÇÃO DE RESULTADOS
     results = {}
@@ -106,14 +105,12 @@ def vpp_dispatch_PO2(vpp_data):
     print(f'\nO total de violações foi {res.CV[0]:.2f}\n')
     
     # Decompõe o vetor de variáveis de decisão em matrizes
-    p_dl, p_chg, p_dch, soc, u_dl, u_chg, u_dch = decomp_vetor_y(y, Nt, Ndl, Nbat) 
+    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat) 
 
     # Reshape dos vetores em matrizes
-    results['p_dl'] = p_dl.reshape((Ndl, Nt))
     results['p_chg'] = p_chg.reshape((Nbat, Nt))
     results['p_dch'] = p_dch.reshape((Nbat, Nt))
     results['soc'] = soc.reshape((Nbat, Nt))
-    results['u_dl'] = u_dl.reshape((Ndl, Nt))
     results['u_chg'] = u_chg.reshape((Nbat, Nt))
     results['u_dch'] = u_dch.reshape((Nbat, Nt))
 

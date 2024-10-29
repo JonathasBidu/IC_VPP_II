@@ -221,8 +221,8 @@ if __name__ == '__main__':
     # Plotagem da projeção da Tarifa da distribuição e da compensação para o usuário
     plt.figure(figsize = (10, 4))
     plt.title('Tarifa da Distribuição e Compensação')
-    plt.plot(tau_dist[0, :Nt], 'b')
-    plt.plot(tau_dl[0, :Nt], 'r')
+    plt.plot(tau_dist, 'b')
+    plt.plot(tau_dl, 'r')
     plt.legend(['Dist', 'Desc 15%'])
     plt.show()
     

@@ -1,5 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from vpp_create import vpp_create
 from carrega_projecoes import projecoes
 from vpp_dispatch_PO1 import vpp_dispatch_PO1

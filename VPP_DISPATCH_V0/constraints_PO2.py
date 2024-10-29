@@ -54,11 +54,13 @@ def const_PO2(y, data: dict):
     p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat)
 
     # reshape de vetrore em matrizes
+    # p_l = p_l.reshape((Nl, Nt))
     p_chg = p_chg.reshape((Nbat, Nt))
     p_dch = p_dch.reshape((Nbat, Nt))
     soc = soc.reshape((Nbat, Nt))
     u_chg = u_chg.reshape((Nbat, Nt))
     u_dch = u_dch.reshape((Nbat, Nt))
+    # u_l = u_l.reshape((Nl, Nt))
 
     # Restrições da bateria
     Nbatc = ((Nt - 1) * Nbat) + ((Nt - 1) * Nbat) + (Nt*Nbat) + (Nt*Nbat) + (Nt*Nbat)
@@ -94,6 +96,7 @@ def const_PO2(y, data: dict):
     c_ineq = c_bat
    
     return c_ineq  
+
 # Exemplos de uso
 if __name__ == '__main__':
         
@@ -122,4 +125,4 @@ if __name__ == '__main__':
 
     c = const_PO2(y, data)
 
-    print(c, f' o tipo é c{type(c)} e o  seu shape é {c.shape}','\n')
+    print(f'c é do tipo ==>> {type(c)} e o  seu shape é {c.shape}','\n', c)
