@@ -14,7 +14,7 @@ def plot(data):
 
         plt.figure(figsize = (12, 5))
         plt.title(f'Carga NÃO despachável{i + 1}')
-        plt.plot(p_l[i, :])
+        plt.plot(p_l[i, :], 'r')
         plt.xlabel('hora')
         plt.ylabel('Potência em MW')
         plt.show()

@@ -5,29 +5,43 @@ import numpy as np
 def func(y, data):
 
     Nt = data['Nt']
-    Nbm = data['Nbm']
-    Ndl = data['Ndl']
-    kappa_bm = data['kappa_bm']
-    kappa_bm_start = data['kappa_bm_start']
-    tau_dl = data['tau_dl']
+    Nbat = data['Nbat']
+    Nl = data['Nl']
+    Npv = data['Npv']
+    Nwt = data['Nwt']
+    kappa_pv = data['kappa_pv']
+    kappa_wt = data['kappa_pv']
+    kappa_bat = data['kappa_bat']
     tau_dist = data['tau_dist']
     tau_pld = data['tau_pld']
+    p_pv = data['p_pv']
+    p_wt = data['p_wt']
+    p_l = data['p_l']
 
 
-    p_bm, p_dl, u_bm, u_dl = decomp_vetor_y(y, Nt, Nbm, Ndl)
+    p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat)
 
-    p_bm = p_bm.reshape((Nbm, Nt))
-    p_dl = p_dl.reshape((Ndl, Nt))
-    u_bm = u_bm.reshape((Nbm, Nt))
-    u_dl = u_dl.reshape((Nbm, Nt))
-
-
+    # Reshape dos vetores em matrizes
+    p_chg = p_chg.reshape((Nbat, Nt))
+    p_dch = p_dch.reshape((Nbat, Nt))
+    soc = soc.reshape((Nbat, Nt))
+    u_chg = u_chg.reshape((Nbat, Nt))
+    u_dch = u_dch.reshape((Nbat, Nt))
+  
+  
+    # Cálculo da potência líquida
     p_liq = np.zeros(Nt)
+
     for t in range(Nt):
-        for i in range(Nbm):
-            p_liq[t] += p_bm[i, t]
-        for i in range(Ndl):
-            p_liq[t] += p_dl[i, t]
+        for i in range(Npv):
+            p_liq[t] += p_pv[i, t]
+        for i in range(Nwt):
+            p_liq[t] += p_wt[i, t]
+        for i in range(Nl):
+            p_liq[t] -= p_l[i, t]
+        for i in range(Nbat):
+            p_liq[t] -= p_chg[i, t] * u_chg[i, t] + p_chg[i, t] * u_chg[i, t]
+        
 
     p_exp = np.maximum(0, p_liq)
     p_imp = np.maximum(0, - p_liq)
@@ -39,27 +53,29 @@ def func(y, data):
 
     # Despesa com importação de energia
     D = 0
+
+    # Importação de energia da distribuidora
     for t in range(Nt):
         D += p_imp[t] * tau_dist[t]
 
     # Custos de geração biomassa (custo linear)
-    Cbm = 0
+    Cpv = 0
     for t in range(Nt):
-        for i in range(Nbm):
-            Cbm += p_bm[i, t] * u_bm[i, t] * kappa_bm[i]
-    
-    #  custo de partida
-    for t in range(1, Nt):
-        for i in range(Nbm):
-            Cbm += (u_bm[i, t] - u_bm[i, t - 1]) * kappa_bm_start[i]
+        for i in range(Npv):
+            Cpv += p_pv[i, t] * kappa_pv[i]
 
-    # Custo de controle de carga despachada
-    Cdl = 0
+    # Custo da geração Eólica
+    Cwt = 0
     for t in range(Nt):
-        for i in range(Ndl):
-            Cdl += p_dl[i, t] * u_dl[i, t] * tau_dl[t]
+        for i in range(Nwt):
+            Cwt += p_wt[i, t] * kappa_wt[i]
 
-    D = D + Cdl + Cbm
+    Cbat = 0
+    for t in range(Nt):
+        for i in range(Nbat):
+            Cbat += ((p_chg[i, t] * u_chg[i, t] + p_dch[i, t] * u_dch[i, t]) * kappa_bat[i])
+
+    D = D + Cwt + Cpv + Cbat
 
     fval = R - D
 
@@ -79,19 +95,23 @@ if __name__ == '__main__':
     Ndl = data['Ndl']
     Npv = data['Npv']
     Nwt = data['Nwt']
+    Nbat = data['Nbat']
 
     p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
     data['tau_dl'] = tau_dl
     data['tau_dist'] = tau_dist
     data['tau_pld'] = tau_pld
+    data['p_pv'] = p_pv
+    data['p_wt'] = p_wt
+    data['p_l'] = p_l
 
-    Nr = Nt * Nbm + Nt * Ndl
-    Ni = Nt * Nbm + Nt * Ndl
-    x = np.random.rand(Nr + Ni)
+    Nr = (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt)
+    Ni = (Nbat * Nt) + (Nbat * Nt) 
+    y = np.random.rand(Nr + Ni)
 
-    func = func(x, data)
+    func = func(y, data)
 
-    print('Vizualizão da função objetivo do problema de primeiro estágio \n')
+    print('Vizualizão da função objetivo do problema de segundo estágio \n')
     print(func)
     print(type(func))

@@ -1,5 +1,5 @@
 import numpy as np
-from func_PO2 import func_PO2
+from func_aux_2 import func
 from constraints_PO2 import const_PO2
 from get_limits_PO2 import vpplimits_PO2
 from decomp_vetor_PO2 import decomp_vetor_y
@@ -66,7 +66,7 @@ def vpp_dispatch_PO2(vpp_data):
 
         def _evaluate(self, y, out, *args, **kwargs):
 
-            out['F'] = np.array([ - func_PO2(y, self.data)])
+            out['F'] = np.array([ - func(y, self.data)])
             out['G'] = const_PO2(y, self.data)
             
     problem = MyProblem(vpp_data,
@@ -81,20 +81,20 @@ def vpp_dispatch_PO2(vpp_data):
     termination = (('n_gen', 150))  
 
     # MODELO FEITO COM PENALIDADES NAS RESTRIÇÕES
-    # from pymoo.constraints.as_penalty import ConstraintsAsPenalty
-    # from pymoo.core.evaluator import Evaluator
-    # from pymoo.core.individual import Individual
+    from pymoo.constraints.as_penalty import ConstraintsAsPenalty
+    from pymoo.core.evaluator import Evaluator
+    from pymoo.core.individual import Individual
 
-    # res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
-    # res = Evaluator().eval(problem, Individual(X = res.X))
+    res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
+    res = Evaluator().eval(problem, Individual(X = res.X))
 
     # MODELO SEM PENALIDADES DE RESTRIÇÃO
-    res = minimize(problem,
-                   algorithm,
-                   termination,
-                   seed = 1,
-                   verbose = True
-                   )
+    # res = minimize(problem,
+    #                algorithm,
+    #                termination,
+    #                seed = 1,
+    #                verbose = True
+    #                )
     
     # GERAÇÃO DE RESULTADOS
     results = {}
