@@ -65,8 +65,8 @@ def vpp_dispatch_PO1(vpp_data):
 
     p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
 
-    print(f'\nO lucro dessa simulação é {- res.F[0]:.2f} R$')
-    print(f'\nO total de violação foi {res.CV[0]} R$')
+    # print(f'\nO lucro dessa simulação é {- res.F[0]:.2f} R$')
+    # print(f'\nO total de violação foi {res.CV[0]} R$')
 
     results['p_bm'] = p_bm.reshape((Nbm, Nt))
     results['u_bm'] = u_bm.reshape((Nbm, Nt))

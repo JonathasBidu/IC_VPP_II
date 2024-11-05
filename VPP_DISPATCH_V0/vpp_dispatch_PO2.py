@@ -77,15 +77,15 @@ def vpp_dispatch_PO2(vpp_data):
                         xu = ub
                         )
     
-    algorithm = GA(pop_size = 250)
-    termination = (('n_gen', 150))  
+    algorithm = GA(pop_size = 50)
+    termination = (('n_gen', 50))  
 
     # MODELO FEITO COM PENALIDADES NAS RESTRIÇÕES
     from pymoo.constraints.as_penalty import ConstraintsAsPenalty
     from pymoo.core.evaluator import Evaluator
     from pymoo.core.individual import Individual
 
-    res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
+    res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = False)
     res = Evaluator().eval(problem, Individual(X = res.X))
 
     # MODELO SEM PENALIDADES DE RESTRIÇÃO
@@ -98,11 +98,13 @@ def vpp_dispatch_PO2(vpp_data):
     
     # GERAÇÃO DE RESULTADOS
     results = {}
-    results['Lucro'] = - res.F
+    results['Lucro'] = - res.F[0]
     y = res.X
 
-    print(f'\nNessa simulação o lucro foi de {- res.F[0]:.2f} R$')
-    print(f'\nO total de violações foi {res.CV[0]:.2f}\n')
+    results['VL'] = res.CV[0]
+
+    # print(f'\nNessa simulação o lucro foi de {- res.F[0]:.2f} R$')
+    # print(f'\nO total de violações foi {res.CV[0]:.2f}\n')
     
     # Decompõe o vetor de variáveis de decisão em matrizes
     p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat) 
