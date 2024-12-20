@@ -10,8 +10,15 @@ from vpp_plot_PO1 import plot
     vpp, além disso, difine a quantidade de cenários. Ao final desse processo, o script realiza a programação da vpp.
 '''
 
-vpp_data = vpp_create()
-    
+data = vpp_create()
+
+def carrega_cenarios(Ns:int, Nt:int, Nl:int, Ndl:int, Npv:int, Nwt:int)->list:
+    scenarios = []
+    for n in range(Ns):
+        scenario = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+        scenarios.append(scenario)
+    return scenarios
+
 # N° de instantes desejado
 while True:
     Nt = input('N° de horas a frente ou tecle enter para 24 horas: ')
@@ -30,22 +37,47 @@ while True:
 print('')
 
 # Paramêtros da VPP
-vpp_data['Nt'] = Nt
-Nl = int(vpp_data['Nl'])
-Ndl = int(vpp_data['Ndl'])
-Npv = int(vpp_data['Npv'])
-Nwt = int(vpp_data['Nwt'])
-Nbm = int(vpp_data['Nbm'])
-Nbat = int(vpp_data['Nbat'])
+data['Nt'] = Nt
+Nl = int(data['Nl'])
+Ndl = int(data['Ndl'])
+Npv = int(data['Npv'])
+Nwt = int(data['Nwt'])
+Nbm = int(data['Nbm'])
+Nbat = int(data['Nbat'])
+
+
 
 # Carregamento das projeções da VPP
-vpp_data['p_l'], vpp_data['p_pv'], vpp_data['p_wt'], vpp_data['p_dl_ref'], vpp_data['p_dl_min'], vpp_data['p_dl_max'], vpp_data['tau_pld'], vpp_data['tau_dist'], vpp_data['tau_dl'] = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+# data['p_l'], data['p_pv'], data['p_wt'], data['p_dl_ref'], data['p_dl_min'], data['p_dl_max'], data['tau_pld'], data['tau_dist'], data['tau_dl'] = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
-results, x = vpp_dispatch_PO1(vpp_data)
+# results, x = vpp_dispatch_PO1(vpp_data)
 
-vpp_data['p_bm'] = results['p_bm']
-vpp_data['u_bm'] = results['u_bm']
-vpp_data['p_dl'] = results['p_dl']
-vpp_data['u_dl'] = results['u_dl']
+# vpp_data['p_bm'] = results['p_bm']
+# vpp_data['u_bm'] = results['u_bm']
+# vpp_data['p_dl'] = results['p_dl']
+# vpp_data['u_dl'] = results['u_dl']
 
-plot(vpp_data)
+# plot(vpp_data)
+
+while True:
+    Ns = input("Insira a quantidade de cenários desejados: ")
+    if Ns == '':
+        Ns = 3
+        break
+    try:
+        Ns = int(Ns)
+        if Ns > 0:
+            Ns = Ns
+            break
+        else:
+            print('Insira um valor inteiro e positivo!')
+    except ValueError as v:
+        print(f'Informe um valor numérico válido! {v}')
+print('')
+
+data['scenarios'] = carrega_cenarios(Ns, Nt, Nl, Ndl, Npv, Nwt)
+
+print(len(data['scenarios']))
+
+
+    

@@ -99,49 +99,49 @@ def projecoes(Nt: int, Nl: int, Ndl: int, Npv: int, Nwt: int)-> tuple[np.ndarray
     tau_dist = TDist_hourly_series.iloc[0, inicio : (inicio + Nt)].values
     tau_dl = 0.15 * TDist_hourly_series.iloc[0, inicio: (inicio + Nt)].values # Abatimento de 15% sobre o valor da tarifa
 
-    dl_delta_min = np.zeros(int(Ndl))
-    dl_delta_max = np.zeros(int(Ndl))
+    # dl_delta_min = np.zeros(int(Ndl))
+    # dl_delta_max = np.zeros(int(Ndl))
 
-    for i in range(int(Ndl)):
-        while True:
-            dl_max = input(f'Insira o limite superior da carga {i + 1} ((%) acima da referência) ou tecle enter para 20%: ')
-            if dl_max == '':
-                dl_delta_max[i] = 20.0 # padrão de 20 por cento de limite de corte de carga superior
-                break
-            try:
-                dl_max = float(dl_max)
-                if dl_max > 0:
-                    dl_delta_max[i] = dl_max
-                    break
-                print('Insira um valor real positivo')
-            except ValueError:
-                print("Informe um valor numérico válido")
+    # for i in range(int(Ndl)):
+    #     while True:
+    #         dl_max = input(f'Insira o limite superior da carga {i + 1} ((%) acima da referência) ou tecle enter para 20%: ')
+    #         if dl_max == '':
+    #             dl_delta_max[i] = 20.0 # padrão de 20 por cento de limite de corte de carga superior
+    #             break
+    #         try:
+    #             dl_max = float(dl_max)
+    #             if dl_max > 0:
+    #                 dl_delta_max[i] = dl_max
+    #                 break
+    #             print('Insira um valor real positivo')
+    #         except ValueError:
+    #             print("Informe um valor numérico válido")
     
-    for i in range(int(Ndl)):
-        while True:
-            dl_min = input(f'Insira o limite inferior da carga {i + 1} ((%) abaixo da referência) ou tecle enter para 20%: ')
-            if dl_min == '':
-                dl_delta_min[i] = 20.0 # Padrão de 20 por cento de limite de corte de carga inferior
-                break
-            try:
-                dl_min = float(dl_min)
-                if dl_min > 0:
-                    dl_delta_min[i] = dl_min
-                    break
-                print('Insira um valor real positivo')
-            except ValueError:
-                print("Informe um valor numérico válido")
+    # for i in range(int(Ndl)):
+    #     while True:
+    #         dl_min = input(f'Insira o limite inferior da carga {i + 1} ((%) abaixo da referência) ou tecle enter para 20%: ')
+    #         if dl_min == '':
+    #             dl_delta_min[i] = 20.0 # Padrão de 20 por cento de limite de corte de carga inferior
+    #             break
+    #         try:
+    #             dl_min = float(dl_min)
+    #             if dl_min > 0:
+    #                 dl_delta_min[i] = dl_min
+    #                 break
+    #             print('Insira um valor real positivo')
+    #         except ValueError:
+    #             print("Informe um valor numérico válido")
 
-    print(' ')
-    dl_delta_max = dl_delta_max / 100.0
-    dl_delta_min = dl_delta_min / 100.0
+    # print(' ')
+    # dl_delta_max = dl_delta_max / 100.0
+    # dl_delta_min = dl_delta_min / 100.0
 
     p_dl_max = np.zeros((int(Ndl), int(Nt)))
     p_dl_min = np.zeros((int(Ndl), int(Nt)))
 
     for i in range(int(Ndl)):
-        p_dl_max[i, :] = p_dl_ref[i, :] + dl_delta_max[i] * np.abs(p_dl_ref[i,:])
-        p_dl_min[i, :] = p_dl_ref[i, :] - dl_delta_min[i] * np.abs(p_dl_ref[i,:])
+        p_dl_max[i, :] = p_dl_ref[i, :] + p_dl_ref[i,:]*0.2#dl_delta_max[i] * np.abs(p_dl_ref[i,:])
+        p_dl_min[i, :] = p_dl_ref[i, :] - p_dl_ref[i,:]*0.2#dl_delta_min[i] * np.abs(p_dl_ref[i,:])
 
 
 

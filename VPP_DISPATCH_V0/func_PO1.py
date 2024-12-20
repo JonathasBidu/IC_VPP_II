@@ -163,6 +163,7 @@ if __name__ == '__main__':
     Npv = data['Npv']
     Nwt = data['Nwt']
 
+    
     p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
     data['tau_dl'] = tau_dl
