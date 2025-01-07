@@ -1,8 +1,10 @@
 from decomp_vetor_PO1 import decomp_vetor_x
 from get_limits_PO2 import vpplimits_PO2
-from func_PO2 import func_PO2
 from constraints_PO2  import const_PO2
+from func_PO2 import func_PO2
+from generate_scenarios import import_scenarios_from_pickle
 import numpy as np
+
 '''
     Esta função é a função do problema de primeiro estágio.
 
@@ -43,7 +45,7 @@ import numpy as np
 
 '''
 
-def vpp_func_PO1(x: np.ndarray, data: dict, Nscenarios: int)-> float:
+def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
 
     Nt = data['Nt']
     Nbm = data['Nbm']  
@@ -81,9 +83,33 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Nscenarios: int)-> float:
     
     # Solução do problema de segundo estágio (PO2) para diferentes cenários
     Eq = 0
-    for s in range(Nscenarios):
+
+    # Obtendo o caminho do arquivo que contém os cenários gerados
+    path_to_scenarios = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\VPP_DISPATCH_V0\\Cenários.pkl'
+    scenarios = import_scenarios_from_pickle(path_to_scenarios)
+
+    for s in range(Ns):
+
+        print(f'Otimização do 2° estágio para o cenário {s + 1}')
         # Atualizar os cenários
-        # data = atualiza_cenario(s, data) # atualiza data com as series de geração/carga associados ao cenário
+        # p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl || variáveis retornadas pela função carrega projeções
+
+        # Variáveis usadas pela func_PO2
+        # p_pv = data['p_pv']
+        # p_wt = data['p_wt']
+        # p_l = data['p_l']
+        # tau_pld = data['tau_pld']
+        # tau_dist = data['tau_dist']
+        # tau_dl = data['tau_dl']   
+
+        # Atualização das projeções
+        data['p_pv'] = scenarios[s]['p_pv']
+        data['p_wt'] = scenarios[s]['p_wt']
+        data['p_l'] = scenarios[s]['p_l']
+        data['tau_pld'] = scenarios[s]['tau_pld']
+        data['tau_dist'] = scenarios[s]['tau_dist']
+        data['tau_dl'] = scenarios[s]['tau_dl']
+
 
         # Definindo a quantidade de variáves reais e inteiras
         Nr = (Nbat * Nt) + (Nbat * Nt) + (Nbat * Nt)
@@ -123,25 +149,34 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Nscenarios: int)-> float:
         algorithm_PO2 = GA(pop_size = 100)
         termination_PO2 = (('n_gen', 50))  
 
-        res_PO2 = minimize(problem = problem_PO2,
-                           algorithm = algorithm_PO2,
-                           termination = termination_PO2,
-                           seed = 1,
-                           verbose = True)
-        
-        if res_PO2.CV[0] == 0.0:
-            vresults_PO2 = {}
-            results_PO2['lucro'] = - results_PO2
-            q = - res_PO2
-            break
+        from pymoo.constraints.as_penalty import ConstraintsAsPenalty
+        from pymoo.core.evaluator import Evaluator
+        from pymoo.core.individual import Individual
 
-        results_PO2 = {}
-        results_PO2['lucro'] = - results_PO2
-        q = - res_PO2
+        res_PO2 = minimize(ConstraintsAsPenalty(problem_PO2, penalty = 100.0), algorithm_PO2, termination_PO2, seed = 1, verbose = True)
+        res_PO2 = Evaluator().eval(problem_PO2, Individual(X = res_PO2.X))
+
+        # res_PO2 = minimize(problem = problem_PO2,
+        #                    algorithm = algorithm_PO2,
+        #                    termination = termination_PO2,
+        #                    seed = 1,
+        #                    verbose = True)
+        
+
+        # if res_PO2.CV[0] == 0.0:
+        #     vresults_PO2 = {}
+        #     results_PO2['lucro'] = - results_PO2
+        #     q = - res_PO2
+        #     break
+
+        # results_PO2 = {}
+        # results_PO2['lucro'] = - results_PO2
+
+        q = - res_PO2.F[0]
 
         Eq += q
 
-    Eq = np.float64(Eq / Nscenarios)
+    Eq = np.float64(Eq / Ns)
 
     # Despesa total
     fval = Cbm + Cdl + Eq

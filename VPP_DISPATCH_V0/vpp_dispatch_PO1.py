@@ -1,5 +1,5 @@
 import numpy as np
-from func_aux import func
+from func_PO1 import vpp_func_PO1
 from constraints_PO1 import const_PO1
 from get_limits_PO1 import vpplimits_PO1
 from decomp_vetor_PO1 import decomp_vetor_x
@@ -11,7 +11,7 @@ from pymoo.config import Config
 Config.warnings['not_compiled'] = False
 
 # Otimização utilizando Ga(Genetic algorithm)
-def vpp_dispatch_PO1(vpp_data):
+def vpp_dispatch_PO1(Ns, vpp_data):
 
     # Obtendo os parâmetros inicias da vpp.
     Nt = vpp_data['Nt']
@@ -36,7 +36,7 @@ def vpp_dispatch_PO1(vpp_data):
 
         def _evaluate(self, x, out, *args, **kwargs):
 
-            out['F'] = np.array([ - func(x, self.data)])
+            out['F'] = np.array([ - vpp_func_PO1(x, self.data, Ns)])
             out['G'] = const_PO1(x, self.data)
 
     problem = MyProblem(vpp_data,

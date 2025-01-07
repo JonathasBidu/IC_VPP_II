@@ -6,7 +6,7 @@ from vpp_plot_test import plot
 
 ''' Esse script...'''
 
-vpp_data = vpp_create()
+data = vpp_create()
 
 # N° de instantes desejado
 while True:
@@ -27,14 +27,14 @@ print('')
 
 # Qtd de cenários
 while True:
-    Nscenario = input('Qtd de cenários ou tecle enter para 3: ')
-    if Nscenario == '':
-        Nscenario = 3
+    Ns = input('Qtd de cenários ou tecle enter para 11: ')
+    if Ns == '':
+        Ns = 11
         break
     try:
-        Nscenario = int(Nscenario)
-        if Nscenario > 0:
-            Nscenario = Nscenario
+        Ns = int(Ns)
+        if Ns > 0:
+            Ns = Ns
             break
         else:
             print("Informe um valor numérico válido!")
@@ -43,42 +43,18 @@ while True:
 print('')
 
 # Paramêtros da VPP
-vpp_data['Nt'] = Nt
-Nl = int(vpp_data['Nl'])
-Ndl = int(vpp_data['Ndl'])
-Npv = int(vpp_data['Npv'])
-Nwt = int(vpp_data['Nwt'])
-Nbm = int(vpp_data['Nbm'])
-Nbat = int(vpp_data['Nbat'])
+data['Nt'] = Nt
+Nl = int(data['Nl'])
+Ndl = int(data['Ndl'])
+Npv = int(data['Npv'])
+Nwt = int(data['Nwt'])
+Nbm = int(data['Nbm'])
+Nbat = int(data['Nbat'])
 
 # Carregamento das projeções da VPP
-vpp_data['p_l'], vpp_data['p_pv'], vpp_data['p_wt'], vpp_data['p_dl_ref'], vpp_data['p_dl_min'], vpp_data['p_dl_max'], vpp_data['tau_pld'], vpp_data['tau_dist'], vpp_data['tau_dl'] = projecoes(Nt, Nl, Ndl, Npv, Nwt)
+data['p_l'], data['p_pv'], data['p_wt'], data['p_dl_ref'], data['p_dl_min'], data['p_dl_max'], data['tau_pld'], data['tau_dist'], data['tau_dl'] = projecoes(Nt, Nl, Ndl, Npv, Nwt)
 
 # otimização do primeiro estágio
-results_PO1, x = vpp_dispatch_PO1(vpp_data)
+results_PO1, x = vpp_dispatch_PO1(Ns, data)
 
-# Variáveis do primeiro estágio
-vpp_data['p_bm'] = results_PO1['p_bm']
-vpp_data['u_bm'] = results_PO1['u_bm']
-vpp_data['p_dl'] = results_PO1['p_dl']
-vpp_data['u_dl'] = results_PO1['u_dl']
-
-for s in range(Nscenario):
-
-
-    vpp_data['p_l'], vpp_data['p_pv'], vpp_data['p_wt'], vpp_data['p_dl_ref'], vpp_data['p_dl_min'], vpp_data['p_dl_max'], vpp_data['tau_pld'], vpp_data['tau_dist'], vpp_data['tau_dl'] = projecoes(Nt, Nl, Ndl, Npv, Nwt)
-
-
-    results_PO2, y = vpp_dispatch_PO2(vpp_data)
-
-    vpp_data['p_chg'] = results_PO2['p_chg']
-    vpp_data['p_dch'] = results_PO2['p_dch']
-    vpp_data['u_chg'] = results_PO2['u_chg']
-    vpp_data['u_dch'] = results_PO2['u_dch']
-    vpp_data['soc'] = results_PO2['soc']
-
-    print(f's == {s+1}')
-
-plot(vpp_data)
-print(f'Para essa simulação o lucro foi de {results_PO2['Lucro']:.2f}\n')
-print(f"O total de violações foi de {results_PO2['VL']:.2f}")
+print('fim')
