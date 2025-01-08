@@ -1,8 +1,6 @@
 from vpp_create import vpp_create
 from carrega_projecoes import projecoes
 from vpp_dispatch_PO1 import vpp_dispatch_PO1
-from vpp_dispatch_PO2 import vpp_dispatch_PO2
-from vpp_plot_test import plot
 
 ''' Esse script...'''
 
@@ -10,7 +8,7 @@ data = vpp_create()
 
 # N° de instantes desejado
 while True:
-    Nt = input('N° de horas a frente ou tecle enter para 24 horas: ')
+    Nt = input('Insira o intervalo de tempo da simulação ou tecle enter para 24 horas: ')
     if Nt == '':
         Nt = 24
         break
@@ -20,14 +18,14 @@ while True:
             Nt = Nt
             break
         else:
-            print("Informe um valor numérico válido!")
+            print("Informe um valor inteiro e positivo!")
     except ValueError as v:
         print(f'Informe um valor numérico válido! {v}')
 print('')
 
 # Qtd de cenários
 while True:
-    Ns = input('Qtd de cenários ou tecle enter para 11: ')
+    Ns = input('Insira a quantidade de cenários desejado ou tecle enter para 11 cenários: ')
     if Ns == '':
         Ns = 11
         break

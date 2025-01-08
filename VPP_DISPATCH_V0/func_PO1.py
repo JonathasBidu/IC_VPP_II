@@ -4,7 +4,7 @@ from constraints_PO2  import const_PO2
 from func_PO2 import func_PO2
 from generate_scenarios import import_scenarios_from_pickle
 import numpy as np
-
+from pathlib import Path
 '''
     Esta função é a função do problema de primeiro estágio.
 
@@ -47,6 +47,7 @@ import numpy as np
 
 def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
 
+    # Obtendo os parâmetros fixos da VPP e as projeções do primeiro estágio
     Nt = data['Nt']
     Nbm = data['Nbm']  
     Ndl = data['Ndl']  
@@ -55,7 +56,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
     kappa_bm_start = data['kappa_bm_start']
     tau_dl = data['tau_dl']
 
-    #  Separação das variaveis no vetor solução
+    #  Separação das variaveis no vetor solução x(p_bm, p_dl, u_bm e u_dl)
     p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
     
     # Reshape vetores em matrizes
@@ -70,7 +71,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         for i in range(Nbm):
             Cbm += p_bm[i, t] * u_bm[i, t] * kappa_bm[i]
     
-    #  custo de partida
+    # Custo de partida
     for t in range(1, Nt):
         for i in range(Nbm):
             Cbm += (u_bm[i, t] - u_bm[i, t - 1]) * kappa_bm_start[i]
@@ -85,12 +86,12 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
     Eq = 0
 
     # Obtendo o caminho do arquivo que contém os cenários gerados
-    path_to_scenarios = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\VPP_DISPATCH_V0\\Cenários.pkl'
+    path_to_scenarios = Path(__file__).parent / 'Cenários.pkl'
     scenarios = import_scenarios_from_pickle(path_to_scenarios)
 
     for s in range(Ns):
 
-        print(f'Otimização do 2° estágio para o cenário {s + 1}')
+        print(f'\nOtimização do 2° estágio para o cenário {s + 1}')
         # Atualizar os cenários
         # p_l, p_pv, p_wt, p_dl_ref, p_dl_min, p_dl_max, tau_pld, tau_dist, tau_dl || variáveis retornadas pela função carrega projeções
 
@@ -102,7 +103,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         # tau_dist = data['tau_dist']
         # tau_dl = data['tau_dl']   
 
-        # Atualização das projeções
+        # Atualização das projeções do cenário s
         data['p_pv'] = scenarios[s]['p_pv']
         data['p_wt'] = scenarios[s]['p_wt']
         data['p_l'] = scenarios[s]['p_l']
@@ -175,12 +176,12 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         q = - res_PO2.F[0]
 
         Eq += q
-
+        print(f'\n fim da solução do segundo estágio\n')
     Eq = np.float64(Eq / Ns)
 
     # Despesa total
     fval = Cbm + Cdl + Eq
-    
+
     return fval
 
 # Exemplo de uso:
@@ -216,7 +217,7 @@ if __name__ == '__main__':
     Ni = Nt * Nbm + Nt * Ndl
     x = np.random.rand(Nr + Ni)
 
-    Nscenarios = 2
+    Nscenarios = 11
 
     func = vpp_func_PO1(x, data, Nscenarios)
 
