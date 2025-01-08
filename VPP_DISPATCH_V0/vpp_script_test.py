@@ -6,9 +6,9 @@ from vpp_dispatch_PO1 import vpp_dispatch_PO1
 
 data = vpp_create()
 
-# N° de instantes desejado
+# Intervalo da simulação
 while True:
-    Nt = input('Insira o intervalo de tempo da simulação ou tecle enter para 24 horas: ')
+    Nt = input('Insira o intervalo da simulação ou tecle enter para 24 horas: ')
     if Nt == '':
         Nt = 24
         break

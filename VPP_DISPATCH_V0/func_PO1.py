@@ -4,7 +4,7 @@ from constraints_PO2  import const_PO2
 from func_PO2 import func_PO2
 from generate_scenarios import import_scenarios_from_pickle
 import numpy as np
-from pathlib import Path
+
 '''
     Esta função é a função do problema de primeiro estágio.
 
@@ -47,7 +47,6 @@ from pathlib import Path
 
 def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
 
-    # Obtendo os parâmetros fixos da VPP e as projeções do primeiro estágio
     Nt = data['Nt']
     Nbm = data['Nbm']  
     Ndl = data['Ndl']  
@@ -56,7 +55,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
     kappa_bm_start = data['kappa_bm_start']
     tau_dl = data['tau_dl']
 
-    #  Separação das variaveis no vetor solução x(p_bm, p_dl, u_bm e u_dl)
+    #  Separação das variaveis no vetor solução
     p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
     
     # Reshape vetores em matrizes
@@ -71,7 +70,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         for i in range(Nbm):
             Cbm += p_bm[i, t] * u_bm[i, t] * kappa_bm[i]
     
-    # Custo de partida
+    #  custo de partida
     for t in range(1, Nt):
         for i in range(Nbm):
             Cbm += (u_bm[i, t] - u_bm[i, t - 1]) * kappa_bm_start[i]
@@ -86,7 +85,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
     Eq = 0
 
     # Obtendo o caminho do arquivo que contém os cenários gerados
-    path_to_scenarios = Path(__file__).parent / 'Cenários.pkl'
+    path_to_scenarios = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\VPP_DISPATCH_V0\\Cenários.pkl'
     scenarios = import_scenarios_from_pickle(path_to_scenarios)
 
     for s in range(Ns):
@@ -103,7 +102,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         # tau_dist = data['tau_dist']
         # tau_dl = data['tau_dl']   
 
-        # Atualização das projeções do cenário s
+        # Atualização das projeções
         data['p_pv'] = scenarios[s]['p_pv']
         data['p_wt'] = scenarios[s]['p_wt']
         data['p_l'] = scenarios[s]['p_l']
@@ -163,31 +162,26 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         #                    seed = 1,
         #                    verbose = True)
         
-
-        # if res_PO2.CV[0] == 0.0:
-        #     vresults_PO2 = {}
-        #     results_PO2['lucro'] = - results_PO2
-        #     q = - res_PO2
-        #     break
-
-        # results_PO2 = {}
-        # results_PO2['lucro'] = - results_PO2
-
+        if res_PO2.CV[0] == 0.0:
+            q = - res_PO2.F[0]
+            break
+ 
         q = - res_PO2.F[0]
-
         Eq += q
-        print(f'\n fim da solução do segundo estágio\n')
+
     Eq = np.float64(Eq / Ns)
 
     # Despesa total
     fval = Cbm + Cdl + Eq
-
-    return fval
+    
+    return fval, res_PO2
 
 # Exemplo de uso:
 if __name__ == '__main__':
     from vpp_data import vpp
     from carrega_projecoes import projecoes
+    from pymoo.config import Config
+    Config.warnings['not_compiled'] = False
 
     data = vpp()
 
@@ -219,8 +213,13 @@ if __name__ == '__main__':
 
     Nscenarios = 11
 
-    func = vpp_func_PO1(x, data, Nscenarios)
+    func, res = vpp_func_PO1(x, data, Nscenarios)
 
-    print('Vizualizão da função objetivo do problema de primeiro estágio \n')
+    print('\nVizualizão da função objetivo do problema de primeiro estágio')
     print(func)
-    print(type(func))
+    print('')
+    print(res.F)  # contém o valor da função objetivo para a solução encontrada, que é o valor otimizado da função.
+    print(res.CV) # contém as violações das restrições. Se for 0, a solução é viável. Se for maior que 0, há violação.
+    print(res.X)  # contém os valores das variáveis de decisão (parâmetros) para a solução encontrada.
+    print(res.G)  # contém os valores das restrições (normalmente a função das restrições) para a solução encontrada.
+
