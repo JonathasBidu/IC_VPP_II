@@ -198,7 +198,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
     # Despesa total
     fval = Cbm + Cdl + Eq
     
-    return fval, res_PO2
+    return fval
 
 # Exemplo de uso:
 if __name__ == '__main__':
@@ -237,15 +237,17 @@ if __name__ == '__main__':
     Ni = Nt * Nbm + Nt * Ndl
     x = np.random.rand(Nr + Ni)
 
-    Nscenarios = int(input('qtd de cenários: '))
+    Nscenarios = 11
 
-    func, res = vpp_func_PO1(x, data, Nscenarios)
+    func = vpp_func_PO1(x, data, Nscenarios)
+
+
 
     print('\nVizualizão da função objetivo do problema de primeiro estágio')
     print(func)
     print('')
-    print(res.F)  # contém o valor da função objetivo para a solução encontrada, que é o valor otimizado da função.
-    print(res.CV) # contém as violações das restrições. Se for 0, a solução é viável. Se for maior que 0, há violação.
-    print(res.X)  # contém os valores das variáveis de decisão (parâmetros) para a solução encontrada.
-    print(res.G)  # contém os valores das restrições (normalmente a função das restrições) para a solução encontrada.
+    # print(res.F)  # contém o valor da função objetivo para a solução encontrada, que é o valor otimizado da função.
+    # print(res.CV) # contém as violações das restrições. Se for 0, a solução é viável. Se for maior que 0, há violação.
+    # print(res.X)  # contém os valores das variáveis de decisão (parâmetros) para a solução encontrada.
+    # print(res.G)  # contém os valores das restrições (normalmente a função das restrições) para a solução encontrada.
 

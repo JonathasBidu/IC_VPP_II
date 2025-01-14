@@ -71,10 +71,14 @@ if __name__ == '__main__':
     # path = Path(__file__).parent / 'Cenários.pkl'
     # save_scenarios_to_pickle(scenarios, path)
 
-    # Carregando os cenários do arquivo .pkl  # cenarios = import_scenarios_from_pickle('C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\VPP_DISPATCH_V0\\Cenários.pkl')
+    # # Carregando os cenários do arquivo .pkl  
+    # path_cenarios = Path(__file__).parent / 'Cenários.pkl'
+    # cenarios = import_scenarios_from_pickle(path_cenarios)
 
     # print(type(cenarios))
-    # print(len(cenarios))
+    # # print(len(cenarios))
+
+    # print(cenarios[0]['p_l'])
 
     # p_ls = []
     # tau_dist = []

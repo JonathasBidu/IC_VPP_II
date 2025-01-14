@@ -47,8 +47,8 @@ def vpp_dispatch_PO1(Ns, vpp_data):
                         xu = ub
                         )
     
-    algorithm = GA(pop_size = 4)
-    termination = (('n_gen', 1))
+    algorithm = GA(pop_size = 2)
+    termination = (('n_gen', 2))
 
     from pymoo.constraints.as_penalty import ConstraintsAsPenalty
     from pymoo.core.evaluator import Evaluator

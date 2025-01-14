@@ -55,4 +55,4 @@ data['p_l'], data['p_pv'], data['p_wt'], data['p_dl_ref'], data['p_dl_min'], dat
 # otimização do primeiro estágio
 results_PO1, x = vpp_dispatch_PO1(Ns, data)
 
-print(data['p_chg'])
+print(f' o lucro foi de {results_PO1['Lucro']:.2f}')
