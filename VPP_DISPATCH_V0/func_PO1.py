@@ -1,4 +1,5 @@
 from decomp_vetor_PO1 import decomp_vetor_x
+from decomp_vetor_PO2 import decomp_vetor_y
 from get_limits_PO2 import vpplimits_PO2
 from constraints_PO2  import const_PO2
 from func_PO2 import func_PO2
@@ -146,8 +147,8 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
                                 xu = ub_PO2)
         
         # Definido o algoritmo
-        algorithm_PO2 = GA(pop_size = 100)
-        termination_PO2 = (('n_gen', 50))  
+        algorithm_PO2 = GA(pop_size = 10)
+        termination_PO2 = (('n_gen', 10))  
 
         from pymoo.constraints.as_penalty import ConstraintsAsPenalty
         from pymoo.core.evaluator import Evaluator
@@ -162,13 +163,36 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
         #                    seed = 1,
         #                    verbose = True)
         
-        if res_PO2.CV[0] == 0.0:
-            q = - res_PO2.F[0]
-            break
- 
-        q = - res_PO2.F[0]
-        Eq += q
 
+        if res_PO2.CV[0] == 0.0:
+            data = {}
+            data['lucro'] = res_PO2.F[0]
+
+            # Obtendo os despachos otimizados do segundo estágio
+            y = res_PO2.X
+            p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat)
+            data['p_chg'] = p_chg.reshape((Nbat, Nt))
+            data['p_dch'] = p_dch.reshape((Nbat, Nt))
+            data['soc'] = soc.reshape((Nbat, Nt))
+            data['u_chg'] = u_chg.reshape((Nbat, Nt))
+            data['u_dch'] = u_dch.reshape((Nbat, Nt))
+            q = res_PO2.F[0]
+
+            break
+
+    
+        data['lucro'] = res_PO2.F[0]
+        y = res_PO2.X
+
+        p_chg, p_dch, soc, u_chg, u_dch = decomp_vetor_y(y, Nt, Nbat)
+        data['p_chg'] = p_chg.reshape((Nbat, Nt))
+        data['p_dch'] = p_dch.reshape((Nbat, Nt))
+        data['soc'] = soc.reshape((Nbat, Nt))
+        data['u_chg'] = u_chg.reshape((Nbat, Nt))
+        data['u_dch'] = u_dch.reshape((Nbat, Nt))
+
+        q = res_PO2.F[0]
+        Eq += q
     Eq = np.float64(Eq / Ns)
 
     # Despesa total
@@ -178,10 +202,12 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
 
 # Exemplo de uso:
 if __name__ == '__main__':
+
     from vpp_data import vpp
     from carrega_projecoes import projecoes
     from pymoo.config import Config
     Config.warnings['not_compiled'] = False
+    
 
     data = vpp()
 
@@ -211,7 +237,7 @@ if __name__ == '__main__':
     Ni = Nt * Nbm + Nt * Ndl
     x = np.random.rand(Nr + Ni)
 
-    Nscenarios = 11
+    Nscenarios = int(input('qtd de cenários: '))
 
     func, res = vpp_func_PO1(x, data, Nscenarios)
 

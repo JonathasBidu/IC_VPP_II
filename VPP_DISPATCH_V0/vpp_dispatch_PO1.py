@@ -47,20 +47,20 @@ def vpp_dispatch_PO1(Ns, vpp_data):
                         xu = ub
                         )
     
-    algorithm = GA(pop_size = 50)
-    termination = (('n_gen', 20))
+    algorithm = GA(pop_size = 4)
+    termination = (('n_gen', 1))
 
-    # from pymoo.constraints.as_penalty import ConstraintsAsPenalty
-    # from pymoo.core.evaluator import Evaluator
-    # from pymoo.core.individual import Individual
+    from pymoo.constraints.as_penalty import ConstraintsAsPenalty
+    from pymoo.core.evaluator import Evaluator
+    from pymoo.core.individual import Individual
 
-    # res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
-    # res = Evaluator().eval(problem, Individual(X = res.X))
+    res = minimize(ConstraintsAsPenalty(problem, penalty = 100.0), algorithm, termination, seed = 1, verbose = True)
+    res = Evaluator().eval(problem, Individual(X = res.X))
     
-    res = minimize(problem, algorithm, termination, verbose = True, seed = 1)
+    # res = minimize(problem, algorithm, termination, verbose = True, seed = 1)
 
     results = {}
-    results['Lucro'] = - res.F
+    results['Lucro'] = res.F[0]
     x = res.X
 
     p_bm, p_dl, u_bm, u_dl = decomp_vetor_x(x, Nt, Nbm, Ndl)
