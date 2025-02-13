@@ -64,12 +64,12 @@ if __name__ == '__main__':
         except ValueError as v:
             print(f'Informe um valor numérico válido! {v}\n')
 
-    # # Gerando uma quantidade de Ns cenários
-    # scenarios = create_scenarios(Ns, Nt, Nl, Ndl, Npv, Nwt)
+    # Gerando uma quantidade de Ns cenários
+    scenarios = create_scenarios(Ns, Nt, Nl, Ndl, Npv, Nwt)
 
-    # # Salvando os Ns cenários em um arquivo .pkl
-    # path = Path(__file__).parent / 'Cenários.pkl'
-    # save_scenarios_to_pickle(scenarios, path)
+    # Salvando os Ns cenários em um arquivo .pkl
+    path = Path(__file__).parent / 'Cenários.pkl'
+    save_scenarios_to_pickle(scenarios, path)
 
     # # Carregando os cenários do arquivo .pkl  
     # path_cenarios = Path(__file__).parent / 'Cenários.pkl'
