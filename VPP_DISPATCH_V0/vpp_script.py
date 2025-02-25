@@ -1,6 +1,7 @@
 from vpp_create import vpp_create
 from carrega_projecoes import projecoes
 from vpp_dispatch_PO1 import vpp_dispatch_PO1
+from plot import vpp_plot
 
 ''' Esse script...'''
 
@@ -55,4 +56,11 @@ data['p_l'], data['p_pv'], data['p_wt'], data['p_dl_ref'], data['p_dl_min'], dat
 # otimização do primeiro estágio
 results_PO1, x = vpp_dispatch_PO1(Ns, data)
 
+data['p_bm'] = results_PO1['p_bm']
+data['u_bm'] = results_PO1['u_bm']
+data['p_dl'] = results_PO1['p_dl']
+data['u_dl'] = results_PO1['u_dl']
+
 print(f' o lucro foi de {results_PO1['Lucro']:.2f}')
+# print(data.keys())
+vpp_plot(data)
