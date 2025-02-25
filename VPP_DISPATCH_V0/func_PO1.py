@@ -5,6 +5,7 @@ from constraints_PO2  import const_PO2
 from func_PO2 import func_PO2
 from generate_scenarios import import_scenarios_from_pickle
 import numpy as np
+from pathlib import Path
 
 '''
     Esta função é a função do problema de primeiro estágio.
@@ -86,7 +87,7 @@ def vpp_func_PO1(x: np.ndarray, data: dict, Ns: int)-> float:
     Eq = 0
 
     # Obtendo o caminho do arquivo que contém os cenários gerados
-    path_to_scenarios = 'C:\\Users\\Jonathas Aguiar\\Desktop\\IC_VPP_II\\VPP_DISPATCH_V0\\Cenários.pkl'
+    path_to_scenarios = Path(__file__).parent / 'Cenários.pkl'
     scenarios = import_scenarios_from_pickle(path_to_scenarios)
 
     for s in range(Ns):

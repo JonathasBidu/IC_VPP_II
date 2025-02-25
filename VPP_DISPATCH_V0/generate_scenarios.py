@@ -64,37 +64,37 @@ if __name__ == '__main__':
         except ValueError as v:
             print(f'Informe um valor numérico válido! {v}\n')
 
-    # Gerando uma quantidade de Ns cenários
-    scenarios = create_scenarios(Ns, Nt, Nl, Ndl, Npv, Nwt)
+    # # Gerando uma quantidade de Ns cenários
+    # scenarios = create_scenarios(Ns, Nt, Nl, Ndl, Npv, Nwt)
 
-    # Salvando os Ns cenários em um arquivo .pkl
-    path = Path(__file__).parent / 'Cenários.pkl'
-    save_scenarios_to_pickle(scenarios, path)
+    # # Salvando os Ns cenários em um arquivo .pkl
+    # path = Path(__file__).parent / 'Cenários.pkl'
+    # save_scenarios_to_pickle(scenarios, path)
 
-    # # Carregando os cenários do arquivo .pkl  
-    # path_cenarios = Path(__file__).parent / 'Cenários.pkl'
-    # cenarios = import_scenarios_from_pickle(path_cenarios)
+    # Carregando os cenários do arquivo .pkl  
+    path_cenarios = Path(__file__).parent / 'Cenários.pkl'
+    cenarios = import_scenarios_from_pickle(path_cenarios)
 
-    # print(type(cenarios))
-    # # print(len(cenarios))
+    print(type(cenarios))
+    # print(len(cenarios))
 
-    # print(cenarios[0]['p_l'])
+    print(cenarios[0]['p_l'])
 
-    # p_ls = []
-    # tau_dist = []
-    # p_pvs = []
+    p_ls = []
+    tau_dist = []
+    p_pvs = []
 
-    # for cenario in cenarios:
-    #     p_ls.append(cenario['p_l'])
-    #     tau_dist.append(cenario['tau_dist'])
-    #     p_pvs.append(cenario['p_pv'])
+    for cenario in cenarios:
+        p_ls.append(cenario['p_l'])
+        tau_dist.append(cenario['tau_dist'])
+        p_pvs.append(cenario['p_pv'])
 
   
-       # Cl = 0
-    # for cenario in range(Ns):
-    #     for i in range(Nl):
-    #         for t in range(Nt):
-    #             Cl += p_ls[cenario][i, t] * tau_dist[cenario][t]
+    Cl = 0
+    for cenario in range(Ns):
+        for i in range(Nl):
+            for t in range(Nt):
+                Cl += p_ls[cenario][i, t] * tau_dist[cenario][t]
 
-    # print(f'Cl = {Cl:.2f}')
-    # print(type(Cl))
+    print(f'Cl = {Cl:.2f}')
+    print(type(Cl))
